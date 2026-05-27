@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import MateriaCard from './MateriaCard';
 import { cuatrimestreLabel } from '../utils/cuatrimestres';
+import { formatMateriaPeriodo } from '../utils/periodos';
 
 const YEARS = [1, 2, 3, 4];
 const CUATRIMESTRE_PAIRS = [[1,2],[3,4],[5,6],[7,8]];
@@ -95,9 +96,9 @@ function EfipCard({ efip, materias, creditosElectivas, selectedId, onSelect }) {
             </span>
           ))}
         </div>
-        {efip.periodo && (
+        {formatMateriaPeriodo(efip) && (
           <div style={{ fontSize: '.7rem', color: '#64748b', marginTop: 4 }}>
-            Período: {efip.periodo}
+            Período: {formatMateriaPeriodo(efip)}
           </div>
         )}
       </div>
@@ -184,16 +185,10 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
       {ingresoMaterias.length > 0 && (
         <div className="year-section">
           <div className="year-label" style={{ color: '#7c3aed' }}>Materias de ingreso</div>
-          <div style={{
-            background: '#fff', border: '1px solid #e2e8f0', borderRadius: 10,
-            padding: 14, boxShadow: '0 1px 4px rgba(0,0,0,.08)',
-            display: 'flex', flexWrap: 'wrap', gap: 8,
-          }}>
-            <div style={{ width: '100%', fontSize: '.72rem', fontWeight: 600, color: '#94a3b8', marginBottom: 4 }}>
-              Universitarios 21 — programa de ingreso
-            </div>
+          <div className="ingreso-panel">
+            <div className="ingreso-panel-title">Universitarios 21 — programa de ingreso</div>
             {ingresoMaterias.map(m => (
-              <div key={m.id} style={{ flex: '1 1 280px' }}>
+              <div key={m.id} className="ingreso-card-wrap">
                 <MateriaCard
                   materia={m}
                   estadoMap={estadoMap}

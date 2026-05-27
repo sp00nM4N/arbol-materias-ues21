@@ -117,13 +117,13 @@ export default function AlertasPanel({ materias, electivas = [], creditosElectiv
           )}
 
           {efip1Disp && (
-            <li style={{ background: '#cffafe', borderColor: '#67e8f9', color: '#0e7490', fontWeight: 700 }}>
-              📝 EFIP I disponible — cumplís todos los requisitos para rendirlo
+            <li className="success-action">
+              EFIP I disponible — cumplís todos los requisitos para rendirlo
             </li>
           )}
           {efip2Disp && (
-            <li style={{ background: '#ede9fe', borderColor: '#c4b5fd', color: '#5b21b6', fontWeight: 700 }}>
-              🎓 EFIP II disponible — podés completar la carrera
+            <li className="success-action">
+              EFIP II disponible — podés completar la carrera
             </li>
           )}
           {regulares.length > 0 && (
@@ -136,7 +136,7 @@ export default function AlertasPanel({ materias, electivas = [], creditosElectiv
 
       {/* ── Planificación predictiva ── */}
       {hasSection2 && (
-        <div className="predictive-section">
+        <div className="predictive-section predictive-alert">
           <div className="predictive-header">
             <span className="predictive-title">Próximo cuatrimestre</span>
             {excedeCap && (

@@ -22,10 +22,20 @@ const ESTADO_LABELS = {
   regular: 'Regular', aprobada: 'Aprobada',
 };
 
+const PERIODOS = ['1A', '2A', '1B', '2B'];
+
+function formatPeriodo(materia) {
+  if (materia.periodo_anio && materia.periodo_tramo) {
+    return `${materia.periodo_anio} ${materia.periodo_tramo}`;
+  }
+  return materia.periodo ?? '';
+}
+
 export default function SidePanel({ materia, materias, electivas, onClose, onUpdate, showNotas = true }) {
   const [estado, setEstado]   = useState(materia.estado);
   const [nota, setNota]       = useState(materia.nota ?? '');
-  const [periodo, setPeriodo] = useState(materia.periodo ?? '');
+  const [periodoAnio, setPeriodoAnio] = useState(materia.periodo_anio ?? '');
+  const [periodoTramo, setPeriodoTramo] = useState(materia.periodo_tramo ?? '');
   const [saving, setSaving]   = useState(false);
   const [newCorrId, setNewCorrId] = useState('');
   const [corrSaving, setCorrSaving] = useState(false);
@@ -36,7 +46,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
   useEffect(() => {
     setEstado(materia.estado);
     setNota(materia.nota ?? '');
-    setPeriodo(materia.periodo ?? '');
+    setPeriodoAnio(materia.periodo_anio ?? '');
+    setPeriodoTramo(materia.periodo_tramo ?? '');
     setNewCorrId('');
   }, [materia.id]);
 
@@ -83,7 +94,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
     await updateMateria(materia.id, {
       estado,
       nota: nota !== '' ? Number(nota) : null,
-      periodo: periodo || null,
+      periodo_anio: periodoAnio !== '' ? Number(periodoAnio) : null,
+      periodo_tramo: periodoTramo || null,
     });
     setSaving(false);
     onUpdate();
@@ -106,7 +118,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
   const showExtras = ['inscripto','cursando','regular','aprobada'].includes(estado);
   const estadoChanged = estado !== materia.estado
     || String(nota) !== String(materia.nota ?? '')
-    || String(periodo) !== String(materia.periodo ?? '');
+    || String(periodoAnio) !== String(materia.periodo_anio ?? '')
+    || String(periodoTramo) !== String(materia.periodo_tramo ?? '');
 
   const headerColor = {
     aprobada: '#16a34a', cursando: '#0891b2', inscripto: '#7c3aed',
@@ -149,7 +162,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
               {ESTADO_LABELS[materia.estado] ?? materia.estado}
             </span>
             {showNotas && materia.nota && <span style={{ fontSize: '.78rem', color: '#64748b', fontWeight: 600 }}>Nota: {materia.nota}</span>}
-            {materia.periodo && <span style={{ fontSize: '.72rem', color: '#94a3b8' }}>{materia.periodo}</span>}
+            {formatPeriodo(materia) && <span style={{ fontSize: '.72rem', color: '#94a3b8' }}>{formatPeriodo(materia)}</span>}
           </div>
         </div>
 
@@ -173,7 +186,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
 
             {showExtras && (
               <div className="extra-fields">
-                <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr' : '1fr', gap: 8 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr 1fr' : '1fr 1fr', gap: 8 }}>
                   {showNotas && (
                     <div className="field-row">
                       <label>Nota (0–10)</label>
@@ -182,9 +195,16 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
                     </div>
                   )}
                   <div className="field-row">
+                    <label>Año</label>
+                    <input type="number" min="2020" max="2100" step="1" placeholder="2025"
+                      value={periodoAnio} onChange={e => setPeriodoAnio(e.target.value)} />
+                  </div>
+                  <div className="field-row">
                     <label>Período</label>
-                    <input type="text" placeholder="2024-1"
-                      value={periodo} onChange={e => setPeriodo(e.target.value)} />
+                    <select value={periodoTramo} onChange={e => setPeriodoTramo(e.target.value)}>
+                      <option value="">Sin período</option>
+                      {PERIODOS.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
                   </div>
                 </div>
               </div>

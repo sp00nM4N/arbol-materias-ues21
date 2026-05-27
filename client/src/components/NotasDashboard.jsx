@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react';
 import { cuatrimestreLabel } from '../utils/cuatrimestres';
+import { formatMateriaPeriodo } from '../utils/periodos';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function gradeColor(n) {
   if (n >= 9) return '#16a34a';
-  if (n >= 7) return '#0284c7';
-  if (n >= 6) return '#ea580c';
+  if (n >= 7) return '#2563eb';
+  if (n >= 5) return '#f59e0b';
   return '#dc2626';
 }
 
@@ -62,6 +63,7 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
         ...m,
         source: 'materia',
         colLabel: cuatrimestreLabel(m.cuatrimestre ?? 0),
+        periodoLabel: formatMateriaPeriodo(m),
       })),
     ...(electivas ?? [])
       .filter(e => e.nota != null)
@@ -72,6 +74,7 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
         anio:        null,
         cuatrimestre: null,
         colLabel:    'Electiva',
+        periodoLabel: e.periodo ?? '',
       })),
   ], [materias, electivas]);
 
@@ -119,9 +122,9 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
   // Promedio by period (all items with período)
   const byPeriodo = useMemo(() => {
     const groups = {};
-    for (const m of allItems.filter(m => m.periodo)) {
-      if (!groups[m.periodo]) groups[m.periodo] = [];
-      groups[m.periodo].push(m.nota);
+    for (const m of allItems.filter(m => m.periodoLabel)) {
+      if (!groups[m.periodoLabel]) groups[m.periodoLabel] = [];
+      groups[m.periodoLabel].push(m.nota);
     }
     return Object.entries(groups)
       .map(([periodo, notas]) => ({ periodo, avg: avg(notas), count: notas.length }))
@@ -145,8 +148,10 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
   const sortedItems = useMemo(() => {
     const items = [...allItems];
     items.sort((a, b) => {
-      let va = a[sortCol] ?? (sortAsc ? Infinity : -Infinity);
-      let vb = b[sortCol] ?? (sortAsc ? Infinity : -Infinity);
+      let va = sortCol === 'periodo' ? a.periodoLabel : a[sortCol];
+      let vb = sortCol === 'periodo' ? b.periodoLabel : b[sortCol];
+      va = va ?? (sortAsc ? Infinity : -Infinity);
+      vb = vb ?? (sortAsc ? Infinity : -Infinity);
       if (typeof va === 'string') va = va.toLowerCase();
       if (typeof vb === 'string') vb = vb.toLowerCase();
       if (va === vb) return 0;
@@ -256,7 +261,7 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
             ))}
           </div>
           <div className="nd-hist-legend">
-            {[['< 6','#dc2626'],['6','#ea580c'],['7–8','#0284c7'],['9–10','#16a34a']].map(([l, c]) => (
+            {[['< 5','#dc2626'],['5–6','#f59e0b'],['7–8','#2563eb'],['9–10','#16a34a']].map(([l, c]) => (
               <span key={l} className="nd-hist-legend-item">
                 <i style={{ background: c }} />{l}
               </span>
@@ -297,7 +302,7 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
                 <div className="nd-risk-name">{m.nombre}</div>
                 <div className="nd-risk-meta">
                   {m.cuatrimestre != null && <span>{cuatrimestreLabel(m.cuatrimestre)}</span>}
-                  {m.periodo && <span>{m.periodo}</span>}
+                  {m.periodoLabel && <span>{m.periodoLabel}</span>}
                   <span className="nd-risk-nota" style={{ color: gradeColor(m.nota), borderColor: gradeColor(m.nota) + '44' }}>
                     {m.nota}
                   </span>
@@ -330,7 +335,7 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
                 <tr key={`${m.source}-${m.id}`} className={m.estado === 'regular' ? 'nd-tr-risk' : ''}>
                   <td>{m.nombre}</td>
                   <td>{m.colLabel}</td>
-                  <td>{m.periodo ?? '—'}</td>
+                  <td>{m.periodoLabel || '—'}</td>
                   <td>
                     <span
                       className="nd-grade-pill"

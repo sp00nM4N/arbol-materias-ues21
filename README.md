@@ -8,6 +8,7 @@ Permite administrar materias, estados de cursada, correlativas, EFIP, electivas 
 
 - Muestra el plan de estudios por año y cuatrimestre.
 - Marca estados de materias: pendiente, inscripto, cursando, regular y aprobada.
+- Registra año y período de cursada/aprobación de materias con períodos normalizados: `1A`, `2A`, `1B`, `2B`.
 - Calcula disponibilidad según correlativas.
 - Visualiza el árbol de correlatividades.
 - Propone un camino de estudio tipo cronograma según el estado actual de la carrera.

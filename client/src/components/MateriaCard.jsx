@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatMateriaPeriodo } from '../utils/periodos';
 
 const LABELS = {
   aprobada:  'Aprobada',
@@ -24,6 +25,7 @@ export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, 
   const visual = computeVisualEstado(materia, estadoMap);
   const isSelected = materia.id === selectedId;
   const hasCorrelativas = (materia.correlativas?.length ?? 0) > 0;
+  const periodo = formatMateriaPeriodo(materia);
 
   return (
     <div
@@ -41,7 +43,7 @@ export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, 
         <span className={`card-badge badge-${visual}`}>{LABELS[visual]}</span>
         {showNotas && materia.nota && <span className="card-nota">{materia.nota}</span>}
       </div>
-      {materia.periodo && <div className="card-periodo">{materia.periodo}</div>}
+      {periodo && <div className="card-periodo">{periodo}</div>}
     </div>
   );
 }

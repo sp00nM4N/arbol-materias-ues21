@@ -24,7 +24,9 @@ db.exec(`
     tipo        TEXT    DEFAULT 'obligatoria',
     estado      TEXT    DEFAULT 'pendiente',
     nota        REAL,
-    periodo     TEXT
+    periodo     TEXT,
+    periodo_anio INTEGER,
+    periodo_tramo TEXT
   );
 
   CREATE TABLE IF NOT EXISTS correlativas (
@@ -166,9 +168,43 @@ if (total === 0) {
   ];
   for (const row of migrations) upsert.run(...row);
 
+  try { db.exec('ALTER TABLE materias ADD COLUMN periodo_anio INTEGER'); } catch (_) {}
+  try { db.exec('ALTER TABLE materias ADD COLUMN periodo_tramo TEXT'); } catch (_) {}
+
+  const parsePeriodo = (value) => {
+    if (!value) return { anio: null, tramo: null };
+    const text = String(value).trim();
+    const yearMatch = text.match(/\b(20\d{2})\b/);
+    const tramoMatch = text.match(/\b([12][ABab]?)\b(?!\d)/);
+    const tramoRaw = tramoMatch?.[1]?.toUpperCase();
+    const tramo = tramoRaw === '1' ? '1A'
+      : tramoRaw === '2' ? '2A'
+      : ['1A', '2A', '1B', '2B'].includes(tramoRaw) ? tramoRaw
+      : null;
+    return {
+      anio: yearMatch ? Number(yearMatch[1]) : null,
+      tramo,
+    };
+  };
+
+  const updatePeriodo = db.prepare(
+    'UPDATE materias SET periodo_anio=?, periodo_tramo=? WHERE id=?'
+  );
+  for (const row of db.prepare(`
+    SELECT id, periodo
+    FROM materias
+    WHERE periodo IS NOT NULL
+      AND (periodo_anio IS NULL OR periodo_tramo IS NULL)
+  `).all()) {
+    const parsed = parsePeriodo(row.periodo);
+    if (parsed.anio || parsed.tramo) {
+      updatePeriodo.run(parsed.anio, parsed.tramo, row.id);
+    }
+  }
+
   db.prepare(`
     UPDATE materias
-    SET estado='pendiente', nota=NULL, periodo=NULL
+    SET estado='pendiente', nota=NULL, periodo=NULL, periodo_anio=NULL, periodo_tramo=NULL
     WHERE tipo='ingreso'
       AND estado='aprobada'
       AND (
@@ -224,9 +260,17 @@ app.get('/api/materias', (_req, res) => {
 
 app.put('/api/materias/:id', (req, res) => {
   const { id } = req.params;
-  const { estado, nota, periodo } = req.body;
-  db.prepare('UPDATE materias SET estado=?, nota=?, periodo=? WHERE id=?')
-    .run(estado, nota ?? null, periodo ?? null, id);
+  const { estado, nota, periodo, periodo_anio, periodo_tramo } = req.body;
+  const normalizedAnio = periodo_anio !== undefined && periodo_anio !== null && periodo_anio !== ''
+    ? Number(periodo_anio)
+    : null;
+  const normalizedTramo = periodo_tramo || null;
+  const normalizedPeriodo = normalizedAnio && normalizedTramo
+    ? `${normalizedAnio}-${normalizedTramo}`
+    : periodo ?? null;
+
+  db.prepare('UPDATE materias SET estado=?, nota=?, periodo=?, periodo_anio=?, periodo_tramo=? WHERE id=?')
+    .run(estado, nota ?? null, normalizedPeriodo, normalizedAnio, normalizedTramo, id);
   res.json({ ok: true });
 });
 
