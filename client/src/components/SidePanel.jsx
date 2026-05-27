@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { updateMateria, addCorrelativa, deleteCorrelativa } from '../api';
+import { cuatrimestreLabel } from '../utils/cuatrimestres';
 
 const ESTADOS = [
   { key: 'pendiente', label: 'Pendiente', icon: '○' },
@@ -21,7 +22,7 @@ const ESTADO_LABELS = {
   regular: 'Regular', aprobada: 'Aprobada',
 };
 
-export default function SidePanel({ materia, materias, electivas, onClose, onUpdate }) {
+export default function SidePanel({ materia, materias, electivas, onClose, onUpdate, showNotas = true }) {
   const [estado, setEstado]   = useState(materia.estado);
   const [nota, setNota]       = useState(materia.nota ?? '');
   const [periodo, setPeriodo] = useState(materia.periodo ?? '');
@@ -131,7 +132,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
                 </div>
               ) : materia.anio ? (
                 <div className="panel-anio-label">
-                  {materia.anio}° Año — {materia.cuatrimestre}° Cuatrimestre
+                  {materia.anio}° Año — {cuatrimestreLabel(materia.cuatrimestre)}
                 </div>
               ) : null}
               <div className="panel-nombre">{materia.nombre}</div>
@@ -147,7 +148,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
             }}>
               {ESTADO_LABELS[materia.estado] ?? materia.estado}
             </span>
-            {materia.nota && <span style={{ fontSize: '.78rem', color: '#64748b', fontWeight: 600 }}>Nota: {materia.nota}</span>}
+            {showNotas && materia.nota && <span style={{ fontSize: '.78rem', color: '#64748b', fontWeight: 600 }}>Nota: {materia.nota}</span>}
             {materia.periodo && <span style={{ fontSize: '.72rem', color: '#94a3b8' }}>{materia.periodo}</span>}
           </div>
         </div>
@@ -172,12 +173,14 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
 
             {showExtras && (
               <div className="extra-fields">
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                  <div className="field-row">
-                    <label>Nota (0–10)</label>
-                    <input type="number" min="0" max="10" step="0.1" placeholder="7.5"
-                      value={nota} onChange={e => setNota(e.target.value)} />
-                  </div>
+                <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr' : '1fr', gap: 8 }}>
+                  {showNotas && (
+                    <div className="field-row">
+                      <label>Nota (0–10)</label>
+                      <input type="number" min="0" max="10" step="0.1" placeholder="7.5"
+                        value={nota} onChange={e => setNota(e.target.value)} />
+                    </div>
+                  )}
                   <div className="field-row">
                     <label>Período</label>
                     <input type="text" placeholder="2024-1"
@@ -246,7 +249,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
                   <option value="">Agregar correlativa…</option>
                   {candidatos.map(m => (
                     <option key={m.id} value={m.id}>
-                      {m.cuatrimestre ? `C${m.cuatrimestre} – ` : ''}{m.nombre}
+                      {m.cuatrimestre ? `${cuatrimestreLabel(m.cuatrimestre)} – ` : ''}{m.nombre}
                     </option>
                   ))}
                 </select>
@@ -264,7 +267,7 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
               {desbloquea.map(m => (
                 <div key={m.id} className="dep-item">
                   {m.nombre}
-                  {m.anio && <span className="dep-item-anio">— {m.anio}° año, C{m.cuatrimestre}</span>}
+                  {m.anio && <span className="dep-item-anio">— {m.anio}° año, {cuatrimestreLabel(m.cuatrimestre)}</span>}
                 </div>
               ))}
             </div>

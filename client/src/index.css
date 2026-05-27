@@ -30,8 +30,43 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   color: #fff;
   padding: 20px 32px 16px;
 }
+.header-topline {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
 .app-header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -.3px; }
 .app-header p  { font-size: .85rem; opacity: .75; margin-top: 2px; }
+
+.privacy-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  border: 1px solid rgba(255,255,255,.28);
+  border-radius: 999px;
+  padding: 6px 12px;
+  background: rgba(255,255,255,.14);
+  color: #fff;
+  font-size: .78rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, transform .1s;
+}
+.privacy-toggle:hover {
+  background: rgba(255,255,255,.22);
+  border-color: rgba(255,255,255,.42);
+}
+.privacy-toggle:active {
+  transform: translateY(1px);
+}
+.privacy-toggle-off {
+  background: rgba(15,23,42,.28);
+  border-color: rgba(255,255,255,.38);
+}
+.privacy-toggle svg { flex-shrink: 0; }
 
 .progress-bar-wrap {
   margin-top: 14px; background: rgba(255,255,255,.2);
@@ -1088,6 +1123,8 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   .plan-layout { display: block; }
   .plan-sidebar { position: static; margin-bottom: 16px; }
   .alerts-panel-compact { max-height: none; }
+  .header-topline { align-items: stretch; flex-direction: column; }
+  .privacy-toggle { align-self: flex-start; }
   .cuatrimestres-row { flex-direction: column; }
   .main-content { padding: 16px; }
   .tabs { padding: 10px 16px 0; }

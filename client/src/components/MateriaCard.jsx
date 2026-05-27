@@ -20,7 +20,7 @@ export function computeVisualEstado(materia, estadoMap) {
   return allMet ? 'disponible' : 'bloqueada';
 }
 
-export default function MateriaCard({ materia, estadoMap, selectedId, onSelect }) {
+export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, showNotas = true }) {
   const visual = computeVisualEstado(materia, estadoMap);
   const isSelected = materia.id === selectedId;
   const hasCorrelativas = (materia.correlativas?.length ?? 0) > 0;
@@ -39,7 +39,7 @@ export default function MateriaCard({ materia, estadoMap, selectedId, onSelect }
       <div className="card-name">{materia.nombre}</div>
       <div className="card-meta">
         <span className={`card-badge badge-${visual}`}>{LABELS[visual]}</span>
-        {materia.nota && <span className="card-nota">{materia.nota}</span>}
+        {showNotas && materia.nota && <span className="card-nota">{materia.nota}</span>}
       </div>
       {materia.periodo && <div className="card-periodo">{materia.periodo}</div>}
     </div>

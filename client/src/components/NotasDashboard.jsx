@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { cuatrimestreLabel } from '../utils/cuatrimestres';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -16,11 +17,6 @@ function avg(arr) {
 
 function fmtAvg(n) {
   return n == null ? '—' : n.toFixed(2);
-}
-
-function cuatriLabel(c) {
-  if (c === 0) return 'Ingreso';
-  return `C${c}`;
 }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -54,7 +50,7 @@ function HBar({ label, value, count, maxVal = 10 }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function NotasDashboard({ materias, electivas }) {
+export default function NotasDashboard({ materias, electivas, showNotas = true }) {
   const [sortCol, setSortCol] = useState('nota');
   const [sortAsc, setSortAsc] = useState(false);
 
@@ -65,7 +61,7 @@ export default function NotasDashboard({ materias, electivas }) {
       .map(m => ({
         ...m,
         source: 'materia',
-        colLabel: cuatriLabel(m.cuatrimestre ?? 0),
+        colLabel: cuatrimestreLabel(m.cuatrimestre ?? 0),
       })),
     ...(electivas ?? [])
       .filter(e => e.nota != null)
@@ -170,6 +166,15 @@ export default function NotasDashboard({ materias, electivas }) {
     </th>
   );
 
+  if (!showNotas) {
+    return (
+      <div className="nd-empty">
+        <p>Notas ocultas para privacidad.</p>
+        <p>Usá el botón del ojo en el encabezado para volver a mostrarlas.</p>
+      </div>
+    );
+  }
+
   if (allItems.length === 0) {
     return (
       <div className="nd-empty">
@@ -265,7 +270,7 @@ export default function NotasDashboard({ materias, electivas }) {
             <div className="nd-card-title">Promedio por cuatrimestre</div>
             <div className="nd-hbars">
               {byCuatri.map(({ cuatrimestre, avg: a, count }) => (
-                <HBar key={cuatrimestre} label={cuatriLabel(cuatrimestre)} value={a} count={count} />
+                <HBar key={cuatrimestre} label={cuatrimestreLabel(cuatrimestre)} value={a} count={count} />
               ))}
             </div>
           </div>
@@ -291,7 +296,7 @@ export default function NotasDashboard({ materias, electivas }) {
               <div key={`${m.source}-${m.id}`} className="nd-risk-row">
                 <div className="nd-risk-name">{m.nombre}</div>
                 <div className="nd-risk-meta">
-                  {m.cuatrimestre != null && <span>{cuatriLabel(m.cuatrimestre)}</span>}
+                  {m.cuatrimestre != null && <span>{cuatrimestreLabel(m.cuatrimestre)}</span>}
                   {m.periodo && <span>{m.periodo}</span>}
                   <span className="nd-risk-nota" style={{ color: gradeColor(m.nota), borderColor: gradeColor(m.nota) + '44' }}>
                     {m.nota}
@@ -314,7 +319,7 @@ export default function NotasDashboard({ materias, electivas }) {
             <thead>
               <tr>
                 <SortHdr col="nombre">Materia</SortHdr>
-                <SortHdr col="cuatrimestre">C</SortHdr>
+                <SortHdr col="cuatrimestre">Q</SortHdr>
                 <SortHdr col="periodo">Período</SortHdr>
                 <SortHdr col="nota">Nota</SortHdr>
                 <SortHdr col="estado">Estado</SortHdr>

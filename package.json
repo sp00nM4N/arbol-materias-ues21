@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "concurrently \"node server/index.js\" \"cd client && npm run dev\"",
     "server": "node server/index.js",
+    "init-db": "node server/init-db.js",
     "client": "cd client && npm run dev",
     "install:all": "npm install && cd client && npm install"
   },

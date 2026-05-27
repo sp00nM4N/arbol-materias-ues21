@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { cuatrimestreLabel } from '../utils/cuatrimestres';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -154,13 +155,13 @@ export default function AlertasPanel({ materias, electivas = [], creditosElectiv
                 <div key={materia.id} className="predictive-item">
                   <div className="predictive-item-name">
                     {materia.nombre}
-                    <span className="predictive-cuatri">C{materia.cuatrimestre}</span>
+                    <span className="predictive-cuatri">{cuatrimestreLabel(materia.cuatrimestre)}</span>
                   </div>
                   <div className="predictive-unlocks">
                     <span className="predictive-arrow">→</span>
                     {desbloquea.map((m, i) => (
                       <span key={m.id} className="predictive-unlock-chip">
-                        {m.nombre}<em> C{m.cuatrimestre}</em>{i < desbloquea.length - 1 ? ',' : ''}
+                        {m.nombre}<em> {cuatrimestreLabel(m.cuatrimestre)}</em>{i < desbloquea.length - 1 ? ',' : ''}
                       </span>
                     ))}
                   </div>

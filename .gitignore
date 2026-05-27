@@ -1,3 +1,4 @@
 /.claude
 /datos.db
 /node_modules
+/client/node_modules

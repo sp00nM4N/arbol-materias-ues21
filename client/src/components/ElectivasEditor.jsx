@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { createElectiva, updateElectiva, deleteElectiva } from '../api';
+import { CUATRIMESTRES, cuatrimestreLabel } from '../utils/cuatrimestres';
 
 // ─── Catálogo oficial de electivas MEC ───────────────────────────────────────
 
@@ -25,18 +26,11 @@ const CATALOGO = [
   'Tecnologías para la Sustentabilidad',
 ];
 
-const CUATRIMESTRES = [
-  [1,'1° Cuatrimestre — 1° Año'], [2,'2° Cuatrimestre — 1° Año'],
-  [3,'3° Cuatrimestre — 2° Año'], [4,'4° Cuatrimestre — 2° Año'],
-  [5,'5° Cuatrimestre — 3° Año'], [6,'6° Cuatrimestre — 3° Año'],
-  [7,'7° Cuatrimestre — 4° Año'], [8,'8° Cuatrimestre — 4° Año'],
-];
-
 const ESTADOS = ['pendiente', 'inscripto', 'cursando', 'regular', 'aprobada'];
 
 // ─── Modal (add from catalog or edit existing) ────────────────────────────────
 
-export function ElectivaModal({ electiva, onSave, onClose }) {
+export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
   const [form, setForm] = useState({
     nombre:       electiva.nombre       ?? '',
     cuatrimestre: electiva.cuatrimestre ?? '',
@@ -88,7 +82,7 @@ export function ElectivaModal({ electiva, onSave, onClose }) {
               style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: '.82rem' }}
             >
               <option value="">— Sin asignar —</option>
-              {CUATRIMESTRES.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+              {CUATRIMESTRES.map(({ value, longLabel }) => <option key={value} value={value}>{longLabel}</option>)}
             </select>
           </div>
 
@@ -114,15 +108,17 @@ export function ElectivaModal({ electiva, onSave, onClose }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr' : '1fr', gap: 10 }}>
             <div className="field-row">
               <label>Período (opcional)</label>
               <input value={form.periodo} onChange={e => set('periodo', e.target.value)} placeholder="2024-1" />
             </div>
-            <div className="field-row">
-              <label>Nota (opcional)</label>
-              <input type="number" min="0" max="10" step="0.1" value={form.nota} onChange={e => set('nota', e.target.value)} placeholder="7.5" />
-            </div>
+            {showNotas && (
+              <div className="field-row">
+                <label>Nota (opcional)</label>
+                <input type="number" min="0" max="10" step="0.1" value={form.nota} onChange={e => set('nota', e.target.value)} placeholder="7.5" />
+              </div>
+            )}
           </div>
 
           <div className="field-row">
@@ -144,7 +140,7 @@ export function ElectivaModal({ electiva, onSave, onClose }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function ElectivasEditor({ electivas, onUpdate }) {
+export default function ElectivasEditor({ electivas, onUpdate, showNotas = true }) {
   const [modal,   setModal]   = useState(null); // null | { ...electiva } to edit/add
   const [search,  setSearch]  = useState('');
 
@@ -178,8 +174,6 @@ export default function ElectivasEditor({ electivas, onUpdate }) {
   const filteredCatalog = CATALOGO.filter(n =>
     n.toLowerCase().includes(search.toLowerCase())
   );
-
-  const cuatriLabel = c => c ? `C${c}` : '—';
 
   return (
     <div className="electivas-section">
@@ -216,11 +210,11 @@ export default function ElectivasEditor({ electivas, onUpdate }) {
                 <div className="nombre">{e.nombre}</div>
                 <div className="meta">
                   <span className={`card-badge badge-${e.estado}`}>{e.estado}</span>
-                  {e.cuatrimestre && <span>C{e.cuatrimestre}</span>}
+                  {e.cuatrimestre && <span>{cuatrimestreLabel(e.cuatrimestre)}</span>}
                   <span>{e.creditos != null ? `${e.creditos} cr.` : 'créditos pendientes'}</span>
                   {e.proveedor && <span>— {e.proveedor}</span>}
                   {e.periodo   && <span>{e.periodo}</span>}
-                  {e.nota      && <span style={{ fontWeight: 700 }}>Nota: {e.nota}</span>}
+                  {showNotas && e.nota && <span style={{ fontWeight: 700 }}>Nota: {e.nota}</span>}
                 </div>
               </div>
               <div className="electiva-actions">
@@ -280,6 +274,7 @@ export default function ElectivasEditor({ electivas, onUpdate }) {
             ? (form) => handleUpdate(modal.id, form)
             : handleCreate}
           onClose={() => setModal(null)}
+          showNotas={showNotas}
         />
       )}
     </div>

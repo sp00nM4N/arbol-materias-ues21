@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { getMaterias, getElectivas, updateElectiva } from './api';
 import KPIPanel from './components/KPIPanel';
 import AlertasPanel from './components/AlertasPanel';
@@ -14,6 +15,7 @@ export default function App() {
   const [tab, setTab]               = useState('plan');
   const [selectedId, setSelectedId] = useState(null);
   const [editingElectiva, setEditingElectiva] = useState(null);
+  const [showNotas, setShowNotas] = useState(() => localStorage.getItem('showNotas') !== 'false');
   const [loading, setLoading]       = useState(true);
 
   const reloadMaterias = useCallback(async () => {
@@ -29,6 +31,10 @@ export default function App() {
   useEffect(() => {
     Promise.all([reloadMaterias(), reloadElectivas()]).finally(() => setLoading(false));
   }, [reloadMaterias, reloadElectivas]);
+
+  useEffect(() => {
+    localStorage.setItem('showNotas', showNotas ? 'true' : 'false');
+  }, [showNotas]);
 
   // Derived state
   const obligatorias = materias.filter(m => m.tipo === 'obligatoria');
@@ -72,8 +78,24 @@ export default function App() {
     <div>
       {/* ── Header ── */}
       <header className="app-header">
-        <h1>Lic. en Ciencia de Datos — UES21</h1>
-        <p>Seguimiento de carrera</p>
+        <div className="header-topline">
+          <div>
+            <h1>Lic. en Ciencia de Datos — UES21</h1>
+            <p>Seguimiento de carrera</p>
+          </div>
+          <button
+            className={`privacy-toggle ${showNotas ? '' : 'privacy-toggle-off'}`}
+            type="button"
+            onClick={() => setShowNotas(v => !v)}
+            aria-pressed={!showNotas}
+            title={showNotas ? 'Ocultar notas para capturas' : 'Mostrar notas'}
+          >
+            {showNotas
+              ? <Eye size={18} strokeWidth={2.2} aria-hidden="true" />
+              : <EyeOff size={18} strokeWidth={2.2} aria-hidden="true" />}
+            <span>{showNotas ? 'Ocultar notas' : 'Mostrar notas'}</span>
+          </button>
+        </div>
         <div className="progress-bar-wrap">
           <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
         </div>
@@ -126,6 +148,7 @@ export default function App() {
                 onSelect={handleSelect}
                 onEditElectiva={setEditingElectiva}
                 creditosElectivas={creditosAprobados}
+                showNotas={showNotas}
               />
             </section>
           </div>
@@ -138,13 +161,14 @@ export default function App() {
             onSelect={handleSelect}
             onEditElectiva={setEditingElectiva}
             creditosElectivas={creditosAprobados}
+            showNotas={showNotas}
           />
         )}
         {tab === 'notas' && (
-          <NotasDashboard materias={materias} electivas={electivas} />
+          <NotasDashboard materias={materias} electivas={electivas} showNotas={showNotas} />
         )}
         {tab === 'electivas' && (
-          <ElectivasEditor electivas={electivas} onUpdate={reloadElectivas} />
+          <ElectivasEditor electivas={electivas} onUpdate={reloadElectivas} showNotas={showNotas} />
         )}
       </main>
 
@@ -156,6 +180,7 @@ export default function App() {
           electivas={electivas}
           onClose={handleClosePanel}
           onUpdate={reloadMaterias}
+          showNotas={showNotas}
         />
       )}
 
@@ -164,6 +189,7 @@ export default function App() {
           electiva={editingElectiva}
           onSave={handleUpdateElectivaFromPlan}
           onClose={() => setEditingElectiva(null)}
+          showNotas={showNotas}
         />
       )}
 

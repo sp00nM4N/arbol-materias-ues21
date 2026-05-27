@@ -2,12 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const Database = require('better-sqlite3');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-const DB_PATH = path.join(__dirname, '..', 'datos.db');
+const DB_PATH = process.env.DB_PATH
+  ? path.resolve(process.env.DB_PATH)
+  : path.join(__dirname, '..', 'datos.db');
+fs.mkdirSync(path.dirname(DB_PATH), { recursive: true });
 const db = new Database(DB_PATH);
 
 // ─── Schema ───────────────────────────────────────────────────────────────────
@@ -289,4 +293,8 @@ app.get('/api/stats', (_req, res) => {
 
 // ─── Start ────────────────────────────────────────────────────────────────────
 const PORT = 3001;
-app.listen(PORT, () => console.log(`API corriendo en http://localhost:${PORT}`));
+if (require.main === module) {
+  app.listen(PORT, () => console.log(`API corriendo en http://localhost:${PORT}`));
+}
+
+module.exports = { app, db, DB_PATH };

@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import MateriaCard from './MateriaCard';
+import { cuatrimestreLabel } from '../utils/cuatrimestres';
 
 const YEARS = [1, 2, 3, 4];
 const CUATRIMESTRE_PAIRS = [[1,2],[3,4],[5,6],[7,8]];
@@ -138,7 +139,7 @@ function ElectivaCard({ electiva, onEdit }) {
   );
 }
 
-export default function MateriasGrid({ materias, electivas = [], selectedId, onSelect, onEditElectiva, creditosElectivas }) {
+export default function MateriasGrid({ materias, electivas = [], selectedId, onSelect, onEditElectiva, creditosElectivas, showNotas = true }) {
   const estadoMap = useMemo(
     () => Object.fromEntries(materias.map(m => [m.id, m.estado])),
     [materias]
@@ -198,6 +199,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                   estadoMap={estadoMap}
                   selectedId={selectedId}
                   onSelect={onSelect}
+                  showNotas={showNotas}
                 />
               </div>
             ))}
@@ -215,7 +217,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
               <div className="cuatrimestres-row">
                 {[c1, c2].map(c => (
                   <div key={c} className="cuatrimestre-col">
-                    <div className="cuatrimestre-title">{c}° Cuatrimestre</div>
+                    <div className="cuatrimestre-title">{cuatrimestreLabel(c)}</div>
                     <div className="materias-list">
                       {(byCuatrimestre[c] || []).map(m => (
                         <MateriaCard
@@ -224,6 +226,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                           estadoMap={estadoMap}
                           selectedId={selectedId}
                           onSelect={onSelect}
+                          showNotas={showNotas}
                         />
                       ))}
                       {(electivasByCuatrimestre[c] || []).map(e => (
@@ -245,6 +248,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                   creditosElectivas={creditosElectivas}
                   selectedId={selectedId}
                   onSelect={onSelect}
+                  showNotas={showNotas}
                 />
               </div>
             )}

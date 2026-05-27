@@ -1,5 +1,6 @@
 import { useRef, useState, useLayoutEffect, useMemo } from 'react';
 import { computeVisualEstado } from './MateriaCard';
+import { CUATRIMESTRE_LABELS } from '../utils/cuatrimestres';
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
 
@@ -7,11 +8,14 @@ const COL_W   = 142;
 const COL_GAP = 10;
 const NODE_GAP = 8;
 
-// Column order: ingreso → C1…C6 → EFIP I → C7…C8 → EFIP II
+// Column order: ingreso → 1Q…6Q → EFIP I → 7Q…8Q → EFIP II
 const COL_KEYS = ['ingreso','c1','c2','c3','c4','c5','c6','efip1','c7','c8','efip2'];
 const COL_LABEL = {
   ingreso: 'Ingreso', efip1: 'EFIP I', efip2: 'EFIP II',
-  c1:'1Q', c2:'2Q', c3:'3Q', c4:'4Q', c5:'5Q', c6:'6Q', c7:'7Q', c8:'8Q',
+  c1: CUATRIMESTRE_LABELS[1], c2: CUATRIMESTRE_LABELS[2],
+  c3: CUATRIMESTRE_LABELS[3], c4: CUATRIMESTRE_LABELS[4],
+  c5: CUATRIMESTRE_LABELS[5], c6: CUATRIMESTRE_LABELS[6],
+  c7: CUATRIMESTRE_LABELS[7], c8: CUATRIMESTRE_LABELS[8],
 };
 
 // Year group headers: label, how many columns they span, accent color
@@ -71,7 +75,7 @@ function BezierPath({ sx, sy, tx, ty, met, highlighted, dimmed }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-export default function TreeView({ materias, electivas = [], selectedId, onSelect, onEditElectiva, creditosElectivas }) {
+export default function TreeView({ materias, electivas = [], selectedId, onSelect, onEditElectiva, creditosElectivas, showNotas = true }) {
   const innerRef = useRef(null);
   const nodeRefs = useRef({});
   const [lines,   setLines]   = useState([]);
@@ -209,7 +213,7 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
                     <div className="tree-node-name">{m.nombre}</div>
                     <div className="tree-node-meta">
                       <span className={`card-badge badge-${visual}`}>{VISUAL_LABELS[visual] ?? visual}</span>
-                      {m.nota != null && <span className="card-nota">{m.nota}</span>}
+                      {showNotas && m.nota != null && <span className="card-nota">{m.nota}</span>}
                       {isElectiva && m.creditos != null && <span className="card-nota">{m.creditos} cr.</span>}
                     </div>
                   </div>
