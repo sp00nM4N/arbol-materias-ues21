@@ -146,6 +146,15 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
     [materias]
   );
 
+  // IDs de materias que son prerrequisito de al menos otra
+  const desbloqueasSet = useMemo(() => {
+    const set = new Set();
+    for (const m of materias) {
+      for (const c of (m.correlativas ?? [])) set.add(c.correlativa_id);
+    }
+    return set;
+  }, [materias]);
+
   const byCuatrimestre = useMemo(() => {
     const map = {};
     for (const m of materias) {
@@ -194,6 +203,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                   estadoMap={estadoMap}
                   selectedId={selectedId}
                   onSelect={onSelect}
+                  desbloquea={desbloqueasSet.has(m.id)}
                   showNotas={showNotas}
                 />
               </div>
@@ -221,6 +231,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                           estadoMap={estadoMap}
                           selectedId={selectedId}
                           onSelect={onSelect}
+                          desbloquea={desbloqueasSet.has(m.id)}
                           showNotas={showNotas}
                         />
                       ))}
@@ -277,6 +288,7 @@ export default function MateriasGrid({ materias, electivas = [], selectedId, onS
                   estadoMap={estadoMap}
                   selectedId={selectedId}
                   onSelect={onSelect}
+                  desbloquea={desbloqueasSet.has(m.id)}
                 />
               </div>
             ))}

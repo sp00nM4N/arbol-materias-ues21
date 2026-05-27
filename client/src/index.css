@@ -611,25 +611,40 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 
 .card-name { font-size: 15px; font-weight: 600; line-height: 1.35; letter-spacing: -0.01em; margin-bottom: 5px; }
 .card-meta { display: flex; align-items: center; justify-content: space-between; gap: 6px; }
-.corr-indicator {
+.corr-indicators {
   position: absolute;
   top: 6px;
   right: 7px;
-  width: 20px;
-  height: 20px;
-  border: 1px solid #93c5fd;
-  border-radius: 999px;
-  background: #eff6ff;
-  color: #1d4ed8;
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+.corr-lock, .corr-key {
+  width: 20px; height: 20px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: .72rem;
-  font-weight: 700;
-  line-height: 1;
+  flex-shrink: 0;
 }
-.materia-card.has-correlativas .card-name {
-  padding-right: 24px;
+.corr-lock-closed {
+  background: #FEE2E2;
+  border: 1px solid #FCA5A5;
+  color: #DC2626;
+}
+.corr-lock-open {
+  background: #DCFCE7;
+  border: 1px solid #86EFAC;
+  color: #16A34A;
+}
+.corr-key {
+  background: var(--disponible-bg);
+  border: 1px solid var(--disponible-border);
+  color: var(--color-primary-accent);
+}
+/* padding-right proporcional a cuántos indicadores puede haber (máx 2) */
+.materia-card.has-indicators .card-name {
+  padding-right: 48px;
 }
 .card-badge {
   font-size: 11px; font-weight: 700; text-transform: uppercase;
@@ -1648,7 +1663,8 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .badge-regular { background: #EA580C; }
 .badge-pendiente { background: #64748B; }
 .card-nota { margin-left: auto; color: var(--text-secondary); font-size: 17px; font-weight: 600; opacity: .82; }
-.corr-indicator { background: #F8F7FF; border-color: #C4B5FD; color: var(--color-primary-dark); }
+.corr-lock-closed { background: #FEE2E2; border-color: #FCA5A5; color: #DC2626; }
+.corr-lock-open   { background: #DCFCE7; border-color: #86EFAC; color: #16A34A; }
 .efip-card { border-radius: var(--radius-lg); padding: 18px; }
 .tree-outer {
   background: #fff;
@@ -2155,7 +2171,7 @@ select:focus-visible {
 .badge-pendiente {
   background: #6B7C81;
 }
-.corr-indicator,
+.corr-key,
 .predictive-cap,
 .camino-pill,
 .catalog-item-add {
@@ -2414,13 +2430,23 @@ select:focus,
 }
 [data-theme="dark"] .alerts-panel li.info,
 [data-theme="dark"] .predictive-unlock-chip,
-[data-theme="dark"] .corr-indicator,
+[data-theme="dark"] .corr-key,
 [data-theme="dark"] .predictive-cap,
 [data-theme="dark"] .camino-pill,
 [data-theme="dark"] .catalog-item-add {
   background: rgba(85,169,168,.12);
   border-color: rgba(85,169,168,.35);
   color: #9DE4E1;
+}
+[data-theme="dark"] .corr-lock-closed {
+  background: rgba(220,38,38,.18);
+  border-color: rgba(248,113,113,.40);
+  color: #F87171;
+}
+[data-theme="dark"] .corr-lock-open {
+  background: rgba(22,163,74,.18);
+  border-color: rgba(74,222,128,.40);
+  color: #4ADE80;
 }
 [data-theme="dark"] .materia-card.pendiente,
 [data-theme="dark"] .tree-node.pendiente,

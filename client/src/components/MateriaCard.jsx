@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { Lock, LockOpen, Key } from 'lucide-react';
 import { formatMateriaPeriodo } from '../utils/periodos';
 
 const LABELS = {
@@ -21,22 +22,40 @@ export function computeVisualEstado(materia, estadoMap) {
   return allMet ? 'disponible' : 'bloqueada';
 }
 
-export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, showNotas = true }) {
+export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, desbloquea = false, showNotas = true }) {
   const visual = computeVisualEstado(materia, estadoMap);
   const isSelected = materia.id === selectedId;
   const hasCorrelativas = (materia.correlativas?.length ?? 0) > 0;
   const periodo = formatMateriaPeriodo(materia);
 
+  const showClosedLock = hasCorrelativas && visual === 'bloqueada';
+  const showOpenLock   = hasCorrelativas && visual === 'disponible';
+  const hasIndicators  = showClosedLock || showOpenLock || desbloquea;
+
   return (
     <div
-      className={`materia-card ${visual}${isSelected ? ' selected-card' : ''}${hasCorrelativas ? ' has-correlativas' : ''}`}
+      className={`materia-card ${visual}${isSelected ? ' selected-card' : ''}${hasIndicators ? ' has-indicators' : ''}`}
       onClick={() => onSelect(materia.id)}
       title="Clic para ver detalle y editar"
     >
-      {hasCorrelativas && (
-        <span className="corr-indicator" title={`${materia.correlativas.length} correlativa${materia.correlativas.length > 1 ? 's' : ''}`}>
-          ⇄
-        </span>
+      {hasIndicators && (
+        <div className="corr-indicators">
+          {showClosedLock && (
+            <span className="corr-lock corr-lock-closed" title="Tiene prerequisitos pendientes">
+              <Lock size={10} strokeWidth={2.5} />
+            </span>
+          )}
+          {showOpenLock && (
+            <span className="corr-lock corr-lock-open" title="Prerequisitos cumplidos — disponible para cursar">
+              <LockOpen size={10} strokeWidth={2.5} />
+            </span>
+          )}
+          {desbloquea && (
+            <span className="corr-key" title="Al aprobarla, desbloquea otras materias">
+              <Key size={10} strokeWidth={2.5} />
+            </span>
+          )}
+        </div>
       )}
       <div className="card-name">{materia.nombre}</div>
       <div className="card-meta">
