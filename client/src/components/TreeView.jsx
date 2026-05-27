@@ -213,7 +213,6 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
                     <div className="tree-node-name">{m.nombre}</div>
                     <div className="tree-node-meta">
                       <span className={`card-badge badge-${visual}`}>{VISUAL_LABELS[visual] ?? visual}</span>
-                      {showNotas && m.nota != null && <span className="card-nota">{m.nota}</span>}
                       {isElectiva && m.creditos != null && <span className="card-nota">{m.creditos} cr.</span>}
                     </div>
                   </div>

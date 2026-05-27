@@ -41,9 +41,19 @@ export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, 
       <div className="card-name">{materia.nombre}</div>
       <div className="card-meta">
         <span className={`card-badge badge-${visual}`}>{LABELS[visual]}</span>
-        {showNotas && materia.nota && <span className="card-nota">{materia.nota}</span>}
       </div>
       {periodo && <div className="card-periodo">{periodo}</div>}
+      {showNotas && materia.nota != null && (
+        <div className="grade-progress">
+          <div className="grade-progress__track">
+            <div
+              className="grade-progress__fill"
+              style={{ width: `${Math.max(8, (materia.nota / 10) * 100)}%` }}
+            />
+          </div>
+          <span className="grade-progress__value">{Number(materia.nota).toFixed(1)}</span>
+        </div>
+      )}
     </div>
   );
 }

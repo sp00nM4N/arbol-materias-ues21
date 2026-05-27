@@ -7,6 +7,7 @@ import {
   EyeOff,
   GitBranch,
   GraduationCap,
+  HelpCircle,
   Layers,
   Route,
   Sun,
@@ -22,6 +23,7 @@ import NotasDashboard from './components/NotasDashboard';
 import CaminoPropuesto from './components/CaminoPropuesto';
 import EfipView from './components/EfipView';
 import MateriasVerano from './components/MateriasVerano';
+import AyudaView from './components/AyudaView';
 import ThemeToggle from './components/ThemeToggle';
 
 function getInitialTheme() {
@@ -108,6 +110,7 @@ export default function App() {
     { id: 'efip1',   label: 'EFIP I',            icon: ClipboardList, target: 'efip1'   },
     { id: 'efip2',   label: 'EFIP II',           icon: ClipboardList, target: 'efip2'   },
     { id: 'verano',  label: 'Materias de Verano', icon: Sun,           target: 'verano'  },
+    { id: 'ayuda',   label: 'Ayuda',              icon: HelpCircle,    target: 'ayuda'   },
   ];
 
   if (loading) {
@@ -236,6 +239,7 @@ export default function App() {
         {tab === 'efip1'  && <EfipView tipo={1} />}
         {tab === 'efip2'  && <EfipView tipo={2} />}
         {tab === 'verano' && <MateriasVerano />}
+        {tab === 'ayuda'  && <AyudaView />}
         </main>
 
         <footer className="app-footer">
