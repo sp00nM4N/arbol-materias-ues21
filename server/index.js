@@ -129,12 +129,11 @@ if (total === 0) {
   );
 
   // [materia_id, correlativa_id]  → "para cursar materia_id necesitás correlativa_id"
-  // Lista base tomada de datos.db.bkp.
   const correlativas = [
     // Idiomas progresivos
     [12, 6], [18, 12], [24, 18], [30, 24], [35, 30],
     // C1 → C2
-    [8, 5], [11, 4],
+    [8, 5],
     // C2 → C3
     [14, 8], [16, 11],
     // C3 → C4
@@ -142,9 +141,9 @@ if (total === 0) {
     // C4 → C5 / C6
     [36, 16], [36, 22], [36, 28],
     // C5 / C6 → C7
-    [38, 22], [38, 25], [40, 16], [42, 36],
+    [38, 22], [38, 25], [42, 36],
     // C7 → C8
-    [43, 25], [44, 23], [45, 22], [45, 25], [47, 39], [48, 36], [48, 42],
+    [43, 25], [45, 22], [45, 25], [48, 36], [48, 42],
   ];
 
   const seedCorr = db.transaction(() => {

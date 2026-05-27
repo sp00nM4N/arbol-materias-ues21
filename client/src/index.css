@@ -2436,6 +2436,196 @@ select:focus,
   color: #9DE4E1;
   border-bottom-color: #55A9A8;
 }
+/* ── Materias de Verano ───────────────────────────────────── */
+.mv-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 860px;
+}
+
+/* Disclaimer */
+.mv-disclaimer {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: var(--regular-bg);
+  border: 1px solid var(--regular-border);
+  border-left: 4px solid var(--regular);
+  border-radius: var(--radius-lg);
+  padding: 14px 16px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+.mv-disclaimer strong { font-weight: 600; color: var(--text-main); }
+.mv-disclaimer-icon { flex-shrink: 0; margin-top: 1px; color: var(--regular); }
+
+/* Stats */
+.mv-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.mv-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 999px;
+  padding: 5px 14px;
+  font-size: 13px;
+}
+.mv-stat-chip strong { font-weight: 700; font-size: 15px; }
+.mv-stat-chip span   { font-weight: 400; color: var(--text-muted); }
+.mv-stat-chip-oblig strong { color: var(--disponible); }
+.mv-stat-chip-elec  strong { color: var(--inscripto);  }
+.mv-stat-chip-ingr  strong { color: var(--aprobada);   }
+
+/* List card */
+.mv-list-card { padding: 0; overflow: hidden; }
+
+/* Year group */
+.mv-anio-group { }
+.mv-anio-header {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--color-primary-accent);
+  background: rgba(85,169,168,.07);
+  padding: 8px 18px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+/* Row */
+.mv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid var(--card-border);
+  transition: background .12s;
+}
+.mv-row:last-child { border-bottom: none; }
+.mv-row:hover { background: rgba(85,169,168,.04); }
+.mv-row-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+.mv-row-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.mv-nombre {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-main);
+  line-height: 1.35;
+}
+
+/* Badges */
+.mv-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  border: 1px solid;
+}
+.mv-badge-electiva {
+  background: var(--inscripto-bg);
+  border-color: var(--inscripto-border);
+  color: var(--inscripto);
+}
+.mv-badge-ingreso {
+  background: var(--aprobada-bg);
+  border-color: var(--aprobada-border);
+  color: var(--aprobada);
+}
+
+/* Periodo pill */
+.mv-periodo {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: rgba(85,169,168,.08);
+  border: 1px solid rgba(85,169,168,.22);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+.mv-periodo-demo { display: inline-block; }
+
+/* Unlocks chip */
+.mv-unlocks {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--disponible);
+  background: var(--disponible-bg);
+  border: 1px solid var(--disponible-border);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mv-unlocks-demo { display: inline-flex; }
+
+/* Legend */
+.mv-legend {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 14px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.mv-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.mv-legend-info { color: var(--text-muted); flex-shrink: 0; }
+
+[data-theme="dark"] .mv-anio-header {
+  background: rgba(85,169,168,.10);
+}
+[data-theme="dark"] .mv-row:hover {
+  background: rgba(85,169,168,.06);
+}
+[data-theme="dark"] .mv-periodo {
+  background: rgba(85,169,168,.10);
+  border-color: rgba(85,169,168,.25);
+}
+
+@media (max-width: 640px) {
+  .mv-row { flex-direction: column; align-items: flex-start; gap: 6px; }
+  .mv-row-right { flex-wrap: wrap; }
+  .mv-unlocks { max-width: 100%; }
+}
+
 /* ── EFIP View ────────────────────────────────────────────── */
 .efip-view-root {
   display: flex;

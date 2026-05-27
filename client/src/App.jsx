@@ -9,6 +9,7 @@ import {
   GraduationCap,
   Layers,
   Route,
+  Sun,
 } from 'lucide-react';
 import { getMaterias, getElectivas, updateElectiva } from './api';
 import KPIPanel from './components/KPIPanel';
@@ -20,6 +21,7 @@ import TreeView from './components/TreeView';
 import NotasDashboard from './components/NotasDashboard';
 import CaminoPropuesto from './components/CaminoPropuesto';
 import EfipView from './components/EfipView';
+import MateriasVerano from './components/MateriasVerano';
 import ThemeToggle from './components/ThemeToggle';
 
 function getInitialTheme() {
@@ -103,8 +105,9 @@ export default function App() {
     { id: 'camino',    label: 'Camino Sugerido',  icon: Route,          target: 'camino'    },
     { id: 'notas',     label: 'Notas',            icon: BarChart3,      target: 'notas'     },
     { id: 'electivas', label: 'Electivas',        icon: Layers,         target: 'electivas' },
-    { id: 'efip1',     label: 'EFIP I',           icon: ClipboardList,  target: 'efip1'     },
-    { id: 'efip2',     label: 'EFIP II',          icon: ClipboardList,  target: 'efip2'     },
+    { id: 'efip1',   label: 'EFIP I',            icon: ClipboardList, target: 'efip1'   },
+    { id: 'efip2',   label: 'EFIP II',           icon: ClipboardList, target: 'efip2'   },
+    { id: 'verano',  label: 'Materias de Verano', icon: Sun,           target: 'verano'  },
   ];
 
   if (loading) {
@@ -230,8 +233,9 @@ export default function App() {
         {tab === 'electivas' && (
           <ElectivasEditor electivas={electivas} onUpdate={reloadElectivas} showNotas={showNotas} />
         )}
-        {tab === 'efip1' && <EfipView tipo={1} />}
-        {tab === 'efip2' && <EfipView tipo={2} />}
+        {tab === 'efip1'  && <EfipView tipo={1} />}
+        {tab === 'efip2'  && <EfipView tipo={2} />}
+        {tab === 'verano' && <MateriasVerano />}
         </main>
       </div>
 
