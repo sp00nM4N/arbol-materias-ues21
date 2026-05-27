@@ -2436,6 +2436,31 @@ select:focus,
   color: #9DE4E1;
   border-bottom-color: #55A9A8;
 }
+/* ── Footer ──────────────────────────────────────────────── */
+.app-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  padding: 14px 4px 4px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--text-muted);
+  opacity: .72;
+  line-height: 1.5;
+}
+.app-footer-sep { opacity: .4; }
+.app-footer-link {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition: border-color .15s, opacity .15s;
+}
+.app-footer-link:hover {
+  border-bottom-color: var(--text-muted);
+  opacity: 1;
+}
+
 /* ── Materias de Verano ───────────────────────────────────── */
 .mv-root {
   display: flex;

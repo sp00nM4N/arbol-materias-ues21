@@ -237,6 +237,14 @@ export default function App() {
         {tab === 'efip2'  && <EfipView tipo={2} />}
         {tab === 'verano' && <MateriasVerano />}
         </main>
+
+        <footer className="app-footer">
+          <span>🄯 {new Date().getFullYear()} Copyleft — Sebastian Moya</span>
+          <span className="app-footer-sep">·</span>
+          <a href="mailto:sebastian.moya@gmail.com" className="app-footer-link">sebastian.moya@gmail.com</a>
+          <span className="app-footer-sep">·</span>
+          <span>Libre para usar, copiar y modificar siempre que se mantengan estas mismas condiciones.</span>
+        </footer>
       </div>
 
       {/* ── Side panel ── */}
