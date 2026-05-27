@@ -127,23 +127,22 @@ if (total === 0) {
   );
 
   // [materia_id, correlativa_id]  → "para cursar materia_id necesitás correlativa_id"
+  // Lista base tomada de datos.db.bkp.
   const correlativas = [
     // Idiomas progresivos
     [12, 6], [18, 12], [24, 18], [30, 24], [35, 30],
     // C1 → C2
-    [7, 1],  [8, 5],  [9, 3],  [10, 1], [11, 4],
+    [8, 5], [11, 4],
     // C2 → C3
-    [14, 8], [14, 5], [16, 11],
+    [14, 8], [16, 11],
     // C3 → C4
-    [19, 15], [20, 14], [21, 13], [22, 8], [22, 9], [23, 10],
-    // C4 → C5
-    [25, 20], [25, 10], [27, 19], [28, 22],
-    // C5 → C6
-    [31, 7],  [31, 10], [33, 19], [33, 21], [36, 25], [36, 22],
-    // C6 → C7
-    [37, 27], [38, 25], [40, 16], [40, 22], [42, 36],
+    [19, 15], [20, 14], [22, 8],
+    // C4 → C5 / C6
+    [36, 16], [36, 22], [36, 28],
+    // C5 / C6 → C7
+    [38, 22], [38, 25], [40, 16], [42, 36],
     // C7 → C8
-    [43, 38], [44, 23], [45, 38], [46, 27], [47, 39], [48, 42],
+    [43, 25], [44, 23], [45, 22], [45, 25], [47, 39], [48, 36], [48, 42],
   ];
 
   const seedCorr = db.transaction(() => {
@@ -161,9 +160,9 @@ if (total === 0) {
     // EFIPs (tipo='examen', no cuentan en el total de materias obligatorias)
     [50, 'EFIP I — Examen Final Integrador Parcial',  3, 6, 'examen',  'pendiente', null, null],
     [51, 'EFIP II — Examen Final Integrador Total',   4, 8, 'examen',  'pendiente', null, null],
-    // Materias de ingreso (pre-aprobadas)
-    [52, 'Aprender en el Siglo 21',                  null, 0, 'ingreso', 'aprobada', 9,  '2024-1'],
-    [53, 'Tecnología, Humanidades y Modelos Globales', null, 0, 'ingreso', 'aprobada', 10, '2024-1'],
+    // Materias de ingreso
+    [52, 'Aprender en el Siglo 21',                  null, 0, 'ingreso', 'pendiente', null, null],
+    [53, 'Tecnología, Humanidades y Modelos Globales', null, 0, 'ingreso', 'pendiente', null, null],
   ];
   for (const row of migrations) upsert.run(...row);
 
