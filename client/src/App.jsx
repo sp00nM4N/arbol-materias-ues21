@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   BarChart3,
   BookOpen,
+  ClipboardList,
   Eye,
   EyeOff,
   GitBranch,
@@ -18,6 +19,7 @@ import SidePanel from './components/SidePanel';
 import TreeView from './components/TreeView';
 import NotasDashboard from './components/NotasDashboard';
 import CaminoPropuesto from './components/CaminoPropuesto';
+import EfipView from './components/EfipView';
 import ThemeToggle from './components/ThemeToggle';
 
 function getInitialTheme() {
@@ -96,11 +98,13 @@ export default function App() {
   }
 
   const navItems = [
-    { id: 'plan', label: 'Plan de Estudios', icon: BookOpen, target: 'plan' },
-    { id: 'arbol', label: 'Árbol', icon: GitBranch, target: 'arbol' },
-    { id: 'camino', label: 'Camino Sugerido', icon: Route, target: 'camino' },
-    { id: 'notas', label: 'Notas', icon: BarChart3, target: 'notas' },
-    { id: 'electivas', label: 'Electivas', icon: Layers, target: 'electivas' },
+    { id: 'plan',      label: 'Plan de Estudios', icon: BookOpen,       target: 'plan'      },
+    { id: 'arbol',     label: 'Árbol',            icon: GitBranch,      target: 'arbol'     },
+    { id: 'camino',    label: 'Camino Sugerido',  icon: Route,          target: 'camino'    },
+    { id: 'notas',     label: 'Notas',            icon: BarChart3,      target: 'notas'     },
+    { id: 'electivas', label: 'Electivas',        icon: Layers,         target: 'electivas' },
+    { id: 'efip1',     label: 'EFIP I',           icon: ClipboardList,  target: 'efip1'     },
+    { id: 'efip2',     label: 'EFIP II',          icon: ClipboardList,  target: 'efip2'     },
   ];
 
   if (loading) {
@@ -226,6 +230,8 @@ export default function App() {
         {tab === 'electivas' && (
           <ElectivasEditor electivas={electivas} onUpdate={reloadElectivas} showNotas={showNotas} />
         )}
+        {tab === 'efip1' && <EfipView tipo={1} />}
+        {tab === 'efip2' && <EfipView tipo={2} />}
         </main>
       </div>
 
