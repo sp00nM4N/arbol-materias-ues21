@@ -166,6 +166,17 @@ if (total === 0) {
   ];
   for (const row of migrations) upsert.run(...row);
 
+  db.prepare(`
+    UPDATE materias
+    SET estado='pendiente', nota=NULL, periodo=NULL
+    WHERE tipo='ingreso'
+      AND estado='aprobada'
+      AND (
+        (id=52 AND nota=9 AND periodo='2024-1')
+        OR (id=53 AND nota=10 AND periodo='2024-1')
+      )
+  `).run();
+
   // Práctica Solidaria pasa a ser obligatoria del 2° año, 3er cuatrimestre
   db.prepare(
     "UPDATE materias SET tipo='obligatoria', anio=2, cuatrimestre=3 WHERE id=49 AND tipo='requisito'"

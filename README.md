@@ -10,6 +10,7 @@ Permite administrar materias, estados de cursada, correlativas, EFIP, electivas 
 - Marca estados de materias: pendiente, inscripto, cursando, regular y aprobada.
 - Calcula disponibilidad según correlativas.
 - Visualiza el árbol de correlatividades.
+- Propone un camino de estudio tipo cronograma según el estado actual de la carrera.
 - Permite editar correlativas desde el plan y desde el árbol.
 - Gestiona EFIP I y EFIP II como exámenes integradores con correlativas propias.
 - Administra electivas, créditos, cuatrimestre, nota, período y proveedor.
@@ -68,7 +69,7 @@ Salida esperada:
 ```text
 Base de datos lista: .../datos.db
 Materias: 53
-Correlativas: ...
+Correlativas: 38
 Electivas cargadas: 0
 ```
 
@@ -115,5 +116,6 @@ npm run client
 ## Notas
 
 - `datos.db` está en `.gitignore` para evitar subir datos personales o avances propios.
-- Las correlativas base y las correlativas de EFIP se cargan de forma idempotente.
+- Las correlativas base se inicializan desde el set validado en `datos.db.bkp`; las correlativas de EFIP se cargan de forma idempotente.
+- Las materias de ingreso se crean como pendientes, sin nota ni período cargado.
 - Las migraciones simples viven en `server/index.js` y se ejecutan al iniciar el backend.

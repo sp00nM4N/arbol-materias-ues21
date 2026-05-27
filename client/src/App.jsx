@@ -8,6 +8,7 @@ import ElectivasEditor, { ElectivaModal } from './components/ElectivasEditor';
 import SidePanel from './components/SidePanel';
 import TreeView from './components/TreeView';
 import NotasDashboard from './components/NotasDashboard';
+import CaminoPropuesto from './components/CaminoPropuesto';
 
 export default function App() {
   const [materias, setMaterias]     = useState([]);
@@ -120,6 +121,9 @@ export default function App() {
         <button className={`tab-btn ${tab==='arbol'?'active':''}`} onClick={() => setTab('arbol')}>
           Árbol
         </button>
+        <button className={`tab-btn ${tab==='camino'?'active':''}`} onClick={() => setTab('camino')}>
+          Camino Sugerido
+        </button>
         <button className={`tab-btn ${tab==='notas'?'active':''}`} onClick={() => setTab('notas')}>
           Notas
         </button>
@@ -162,6 +166,14 @@ export default function App() {
             onEditElectiva={setEditingElectiva}
             creditosElectivas={creditosAprobados}
             showNotas={showNotas}
+          />
+        )}
+        {tab === 'camino' && (
+          <CaminoPropuesto
+            materias={materias}
+            electivas={electivas}
+            creditosElectivas={creditosAprobados}
+            onSelect={handleSelect}
           />
         )}
         {tab === 'notas' && (

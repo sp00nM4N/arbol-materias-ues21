@@ -337,6 +337,220 @@ body { font-family: var(--font); background: var(--bg); color: var(--text); min-
   font-weight: 500;
 }
 
+/* Camino propuesto */
+.camino-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.camino-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.camino-kicker,
+.camino-block-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #1d4ed8;
+  font-size: .76rem;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.camino-header h2 {
+  font-size: 1.18rem;
+  line-height: 1.25;
+  margin-top: 5px;
+}
+.camino-header-meta,
+.camino-chip-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.camino-header-meta {
+  justify-content: flex-end;
+  max-width: 480px;
+}
+.camino-disclaimer {
+  border: 1px solid #facc15;
+  border-left: 4px solid #eab308;
+  border-radius: 8px;
+  background: #fefce8;
+  color: #713f12;
+  padding: 10px 12px;
+  font-size: .8rem;
+  font-weight: 700;
+  line-height: 1.4;
+}
+.camino-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  border: 1px solid #bfdbfe;
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: #eff6ff;
+  color: #1e40af;
+  font-size: .72rem;
+  font-weight: 800;
+}
+.camino-pill-active {
+  border-color: var(--cursando-border);
+  background: var(--cursando-bg);
+  color: #0e7490;
+}
+.camino-pill-final {
+  border-color: var(--regular-border);
+  background: var(--regular-bg);
+  color: #9a3412;
+}
+.camino-now {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.camino-now-block {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 14px;
+}
+.camino-now-block .camino-block-title {
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.camino-board {
+  display: grid;
+  grid-template-columns: repeat(var(--camino-cols), minmax(235px, 1fr));
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.camino-stage {
+  min-width: 235px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+.camino-stage-head {
+  min-height: 58px;
+  border-bottom: 1px solid var(--border);
+  padding: 11px 12px;
+  background: #f8fafc;
+}
+.camino-stage-head span {
+  display: block;
+  font-size: .86rem;
+  font-weight: 900;
+}
+.camino-stage-head small {
+  display: block;
+  margin-top: 2px;
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+.camino-stage-body {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 10px;
+}
+.camino-materia {
+  width: 100%;
+  min-height: 66px;
+  border: 1px solid #cbd5e1;
+  border-left: 4px solid #2563eb;
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: #fff;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color .12s, box-shadow .12s, transform .12s;
+}
+.camino-materia:hover,
+.camino-materia:focus {
+  border-color: #93c5fd;
+  box-shadow: var(--shadow-lg);
+  outline: none;
+  transform: translateY(-1px);
+}
+.camino-materia-title {
+  display: block;
+  color: var(--text);
+  font-size: .78rem;
+  font-weight: 800;
+  line-height: 1.25;
+}
+.camino-materia-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: .68rem;
+  font-weight: 800;
+}
+.camino-materia-meta strong {
+  color: #166534;
+  background: #dcfce7;
+  border: 1px solid #86efac;
+  border-radius: 999px;
+  padding: 0 7px;
+}
+.camino-milestones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+}
+.camino-milestone {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  min-height: 76px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  padding: 14px;
+  color: var(--muted);
+}
+.camino-milestone.ok {
+  border-color: var(--aprobada-border);
+  background: var(--aprobada-bg);
+  color: #166534;
+}
+.camino-milestone strong {
+  display: block;
+  color: var(--text);
+  font-size: .84rem;
+}
+.camino-milestone span {
+  display: block;
+  margin-top: 2px;
+  font-size: .74rem;
+  line-height: 1.35;
+}
+.camino-blocked {
+  border: 1px solid #fecaca;
+  border-radius: var(--radius);
+  background: #fef2f2;
+  padding: 12px 14px;
+  color: #991b1b;
+  font-size: .8rem;
+  line-height: 1.4;
+}
+.camino-blocked strong {
+  margin-right: 6px;
+}
+
 /* ── Year section ─────────────────────────────────────────── */
 .year-section { margin-bottom: 28px; }
 .year-label {
