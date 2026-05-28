@@ -80,6 +80,26 @@ export default function App() {
     .filter(e => e.estado === 'aprobada')
     .reduce((s, e) => s + e.creditos, 0);
 
+  // Avance por año (excluye tipo 'ingreso')
+  const yearProgress = useMemo(() => {
+    const byYear = {};
+    for (const m of materias) {
+      if (m.tipo === 'ingreso' || !m.anio) continue;
+      if (!byYear[m.anio]) byYear[m.anio] = { total: 0, aprobadas: 0 };
+      byYear[m.anio].total++;
+      if (m.estado === 'aprobada') byYear[m.anio].aprobadas++;
+    }
+    return Object.entries(byYear)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([anio, { total, aprobadas }]) => ({
+        anio: Number(anio),
+        label: `${anio}° año`,
+        total,
+        aprobadas,
+        pct: total ? Math.round((aprobadas / total) * 100) : 0,
+      }));
+  }, [materias]);
+
   // Resolve selected materia from current materias array (stays fresh after reloads)
   const selectedMateria = useMemo(
     () => selectedId ? materias.find(m => m.id === selectedId) ?? null : null,
@@ -181,6 +201,28 @@ export default function App() {
             </div>
             <span>{aprobadas} de {total} materias aprobadas</span>
           </div>
+
+          {yearProgress.length > 0 && (
+            <div className="year-progress-wrapper">
+              <div className="year-progress-label">Avance por año</div>
+              <div className="year-progress-bar">
+                {yearProgress.map(y => (
+                  <div key={y.anio} className="year-progress-segment">
+                    <div className="year-progress-segment__fill" style={{ width: `${y.pct}%` }} />
+                  </div>
+                ))}
+              </div>
+              <div className="year-progress-meta">
+                {yearProgress.map(y => (
+                  <div key={y.anio} className="year-progress-meta__item">
+                    <span className="year-progress-meta__percent">{y.pct}%</span>
+                    <span className="year-progress-meta__label">{y.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <KPIPanel
             aprobadas={aprobadas}
             cursando={cursando}

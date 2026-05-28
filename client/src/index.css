@@ -99,6 +99,70 @@ button:focus-visible, input:focus-visible, select:focus-visible {
   font-size: .78rem; opacity: .8; margin-top: 5px;
 }
 
+/* ── Avance por año ───────────────────────────────────────── */
+.year-progress-wrapper {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.year-progress-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  opacity: .65;
+}
+.year-progress-bar {
+  display: flex;
+  width: 100%;
+  height: 6px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--progress-track, #DDE5E7);
+}
+.year-progress-segment {
+  position: relative;
+  flex: 1;
+  background: var(--progress-track, #DDE5E7);
+}
+.year-progress-segment:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(46,89,97,.2);
+  z-index: 1;
+}
+.year-progress-segment__fill {
+  height: 100%;
+  background: linear-gradient(90deg, #2E5961 0%, #55A9A8 100%);
+  transition: width .5s ease;
+}
+.year-progress-meta {
+  display: flex;
+}
+.year-progress-meta__item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+.year-progress-meta__percent {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+.year-progress-meta__label {
+  font-size: 11px;
+  font-weight: 400;
+  opacity: .72;
+  line-height: 1;
+}
+
 /* ── KPI chips ────────────────────────────────────────────── */
 .kpi-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
 .kpi-chip {
@@ -2316,8 +2380,16 @@ select:focus,
 }
 [data-theme="dark"] .progress-bar-wrap,
 [data-theme="dark"] .elec-progress-track,
-[data-theme="dark"] .nd-hbar-track {
+[data-theme="dark"] .nd-hbar-track,
+[data-theme="dark"] .year-progress-bar,
+[data-theme="dark"] .year-progress-segment {
   background: var(--progress-track);
+}
+[data-theme="dark"] .year-progress-segment:not(:last-child)::after {
+  background: rgba(255,255,255,.15);
+}
+.year-progress-segment:not(:last-child)::after {
+  background: rgba(46,89,97,.2);
 }
 [data-theme="dark"] .materia-card.aprobada,
 [data-theme="dark"] .tree-node.aprobada,
