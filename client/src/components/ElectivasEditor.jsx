@@ -26,151 +26,232 @@ const CATALOGO = [
   'Tecnologías para la Sustentabilidad',
 ];
 
-const ESTADOS  = ['pendiente', 'inscripto', 'cursando', 'regular', 'aprobada'];
+const ESTADOS = [
+  { key: 'pendiente', label: 'Pendiente', icon: '○' },
+  { key: 'inscripto', label: 'Inscripto',  icon: '◈' },
+  { key: 'cursando',  label: 'Cursando',   icon: '◎' },
+  { key: 'regular',   label: 'Regular',    icon: '◑' },
+  { key: 'aprobada',  label: 'Aprobada',   icon: '●' },
+];
+
+const ESTADO_LABELS = {
+  pendiente: 'Pendiente', inscripto: 'Inscripto', cursando: 'Cursando',
+  regular: 'Regular', aprobada: 'Aprobada',
+};
+
 const PERIODOS = ['1A', '2A', '1B', '2B'];
 
-// ─── Modal (add from catalog or edit existing) ────────────────────────────────
+const HEADER_COLOR = {
+  aprobada: '#16a34a', cursando: '#0891b2', inscripto: '#7c3aed',
+  regular: '#ea580c', pendiente: '#64748b',
+};
 
-export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
-  const [form, setForm] = useState({
-    nombre:        electiva.nombre        ?? '',
-    cuatrimestre:  electiva.cuatrimestre  ?? '',
-    creditos:      electiva.creditos      ?? '',
-    estado:        electiva.estado        ?? 'pendiente',
-    proveedor:     electiva.proveedor     ?? '',
-    periodo_anio:  electiva.periodo_anio  ?? '',
-    periodo_tramo: electiva.periodo_tramo ?? '',
-    nota:          electiva.nota          ?? '',
-  });
+// ─── Panel lateral (reemplaza al modal) ──────────────────────────────────────
+
+export function ElectivaPanel({ electiva, onSave, onClose, showNotas = true }) {
   const isNew = !electiva.id;
 
-  function set(k, v) { setForm(f => ({ ...f, [k]: v })); }
+  const [nombre,       setNombre]       = useState(electiva.nombre        ?? '');
+  const [estado,       setEstado]       = useState(electiva.estado        ?? 'pendiente');
+  const [creditos,     setCreditos]     = useState(electiva.creditos      ?? '');
+  const [cuatrimestre, setCuatrimestre] = useState(electiva.cuatrimestre  ?? '');
+  const [periodoAnio,  setPeriodoAnio]  = useState(electiva.periodo_anio  ?? '');
+  const [periodoTramo, setPeriodoTramo] = useState(electiva.periodo_tramo ?? '');
+  const [nota,         setNota]         = useState(electiva.nota          ?? '');
+  const [saving,       setSaving]       = useState(false);
+
+  const fromCatalog = electiva._fromCatalog;
+  const headerColor = HEADER_COLOR[isNew ? 'pendiente' : electiva.estado] ?? '#64748b';
+
+  const showExtras = ['inscripto', 'cursando', 'regular', 'aprobada'].includes(estado);
+
+  const hasChanges = isNew
+    || nombre        !== (electiva.nombre        ?? '')
+    || estado        !== (electiva.estado        ?? 'pendiente')
+    || String(creditos)     !== String(electiva.creditos     ?? '')
+    || String(cuatrimestre) !== String(electiva.cuatrimestre ?? '')
+    || String(periodoAnio)  !== String(electiva.periodo_anio ?? '')
+    || periodoTramo  !== (electiva.periodo_tramo ?? '')
+    || String(nota)  !== String(electiva.nota ?? '');
 
   async function save() {
-    if (!form.nombre.trim()) return;
+    if (!nombre.trim()) return;
+    setSaving(true);
     await onSave({
-      ...form,
-      nombre:       form.nombre.trim(),
-      cuatrimestre: form.cuatrimestre  !== '' ? Number(form.cuatrimestre)  : null,
-      creditos:     form.creditos      !== '' ? Number(form.creditos)      : null,
-      nota:         form.nota          !== '' ? Number(form.nota)          : null,
-      periodo_anio: form.periodo_anio  !== '' ? Number(form.periodo_anio)  : null,
-      periodo_tramo: form.periodo_tramo || null,
+      nombre:        nombre.trim(),
+      estado,
+      creditos:      creditos     !== '' ? Number(creditos)     : null,
+      cuatrimestre:  cuatrimestre !== '' ? Number(cuatrimestre) : null,
+      periodo_anio:  periodoAnio  !== '' ? Number(periodoAnio)  : null,
+      periodo_tramo: periodoTramo || null,
+      nota:          nota         !== '' ? Number(nota)         : null,
     });
+    setSaving(false);
     onClose();
   }
 
-  const fromCatalog = electiva._fromCatalog;
+  const periodoDisplay = periodoAnio && periodoTramo ? `${periodoAnio} ${periodoTramo}` : '';
 
   return (
-    <div className="edit-overlay" onClick={onClose}>
-      <div className="edit-modal" onClick={e => e.stopPropagation()}>
-        <h3>{isNew ? 'Agregar electiva al plan' : 'Editar electiva'}</h3>
-        <div className="form-col">
+    <>
+      <div className="side-panel-overlay" onClick={onClose} />
+      <div className="side-panel">
+        <div style={{ height: 4, background: headerColor, flexShrink: 0 }} />
 
-          {/* Nombre (readonly si viene del catálogo) */}
-          <div className="field-row">
-            <label>Materia</label>
+        {/* Header */}
+        <div className="panel-header">
+          <div className="panel-header-top">
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="panel-anio-label" style={{ color: '#7c3aed' }}>
+                ★ Materia Electiva
+              </div>
+              <div className="panel-nombre">
+                {isNew ? (fromCatalog ? electiva.nombre : 'Nueva electiva') : electiva.nombre}
+              </div>
+            </div>
+            <button className="panel-close-btn" onClick={onClose} title="Cerrar">✕</button>
+          </div>
+          {!isNew && (
+            <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
+              <span style={{
+                background: headerColor, color: '#fff',
+                fontSize: '.72rem', fontWeight: 700, padding: '3px 10px',
+                borderRadius: 999, textTransform: 'uppercase', letterSpacing: '.04em',
+              }}>
+                {ESTADO_LABELS[electiva.estado] ?? electiva.estado}
+              </span>
+              {showNotas && electiva.nota != null && (
+                <span style={{ fontSize: '.78rem', color: '#64748b', fontWeight: 600 }}>
+                  Nota: {electiva.nota}
+                </span>
+              )}
+              {periodoDisplay && (
+                <span style={{ fontSize: '.72rem', color: '#94a3b8' }}>{periodoDisplay}</span>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Body */}
+        <div className="panel-body">
+
+          {/* ── Nombre ── */}
+          <div className="panel-section">
+            <div className="panel-section-title">Materia</div>
             {fromCatalog
-              ? <div className="catalog-nombre-readonly">{form.nombre}</div>
-              : <input value={form.nombre} onChange={e => set('nombre', e.target.value)} placeholder="Nombre de la materia" />
+              ? <div style={{ fontSize: '.85rem', fontWeight: 600, padding: '6px 0' }}>{nombre}</div>
+              : (
+                <div className="field-row">
+                  <input
+                    value={nombre}
+                    onChange={e => setNombre(e.target.value)}
+                    placeholder="Nombre de la materia electiva"
+                  />
+                </div>
+              )
             }
           </div>
 
-          {/* Cuatrimestre — referencia en el plan de estudios */}
-          <div className="field-row">
-            <label>Cuatrimestre en el plan (opcional)</label>
-            <select
-              value={form.cuatrimestre}
-              onChange={e => set('cuatrimestre', e.target.value)}
-              style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: '.82rem' }}
-            >
-              <option value="">— Sin asignar —</option>
-              {CUATRIMESTRES.map(({ value, longLabel }) => <option key={value} value={value}>{longLabel}</option>)}
-            </select>
+          {/* ── Estado ── */}
+          <div className="panel-section">
+            <div className="panel-section-title">Estado</div>
+            <div className="estado-buttons">
+              {ESTADOS.map(e => (
+                <button
+                  key={e.key}
+                  className={`estado-btn e-${e.key} ${estado === e.key ? 'selected' : ''}`}
+                  onClick={() => setEstado(e.key)}
+                >
+                  <span>{e.icon}</span> {e.label}
+                </button>
+              ))}
+            </div>
+
+            {showExtras && (
+              <div className="extra-fields">
+                <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr 1fr' : '1fr 1fr', gap: 8 }}>
+                  {showNotas && (
+                    <div className="field-row">
+                      <label>Nota (0–10)</label>
+                      <input type="number" min="0" max="10" step="0.1" placeholder="7.5"
+                        value={nota} onChange={e => setNota(e.target.value)} />
+                    </div>
+                  )}
+                  <div className="field-row">
+                    <label>Año</label>
+                    <input type="number" min="2020" max="2100" step="1" placeholder="2026"
+                      value={periodoAnio} onChange={e => setPeriodoAnio(e.target.value)} />
+                  </div>
+                  <div className="field-row">
+                    <label>Período</label>
+                    <select value={periodoTramo} onChange={e => setPeriodoTramo(e.target.value)}>
+                      <option value="">Sin período</option>
+                      {PERIODOS.map(p => <option key={p} value={p}>{p}</option>)}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div className="field-row">
-              <label>Créditos</label>
-              <input
-                type="number" min="1" max="10"
-                value={form.creditos}
-                onChange={e => set('creditos', e.target.value)}
-                placeholder="4"
-              />
-            </div>
-            <div className="field-row">
-              <label>Estado</label>
-              <select
-                value={form.estado}
-                onChange={e => set('estado', e.target.value)}
-                style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: '.82rem' }}
-              >
-                {ESTADOS.map(s => <option key={s} value={s}>{s.charAt(0).toUpperCase() + s.slice(1)}</option>)}
-              </select>
-            </div>
-          </div>
-
-          {/* Período real — mismo esquema que materias */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div className="field-row">
-              <label>Año</label>
-              <input
-                type="number" min="2020" max="2100" step="1"
-                value={form.periodo_anio}
-                onChange={e => set('periodo_anio', e.target.value)}
-                placeholder="2026"
-              />
-            </div>
-            <div className="field-row">
-              <label>Período</label>
-              <select
-                value={form.periodo_tramo}
-                onChange={e => set('periodo_tramo', e.target.value)}
-                style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: '.82rem' }}
-              >
-                <option value="">— Sin período —</option>
-                {PERIODOS.map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
+          {/* ── Créditos y cuatrimestre ── */}
+          <div className="panel-section">
+            <div className="panel-section-title">Detalles</div>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+              <div className="field-row">
+                <label>Créditos <span style={{ fontWeight: 400, color: '#94a3b8', fontSize: '.7rem' }}>(vacío = 4 estimados)</span></label>
+                <input type="number" min="1" max="10" placeholder="—"
+                  value={creditos} onChange={e => setCreditos(e.target.value)} />
+              </div>
+              <div className="field-row">
+                <label>Cuatrimestre en el plan</label>
+                <select
+                  value={cuatrimestre}
+                  onChange={e => setCuatrimestre(e.target.value)}
+                >
+                  <option value="">— Sin asignar —</option>
+                  {CUATRIMESTRES.map(({ value, longLabel }) => (
+                    <option key={value} value={value}>{longLabel}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           </div>
 
-          {showNotas && (
-            <div className="field-row">
-              <label>Nota (opcional)</label>
-              <input type="number" min="0" max="10" step="0.1" value={form.nota} onChange={e => set('nota', e.target.value)} placeholder="7.5" />
-            </div>
-          )}
-
-          <div className="field-row">
-            <label>Proveedor / Institución (opcional)</label>
-            <input value={form.proveedor} onChange={e => set('proveedor', e.target.value)} placeholder="UES21, Coursera…" />
-          </div>
-        </div>
-
-        <div className="form-footer">
-          <button className="btn-cancel" onClick={onClose}>Cancelar</button>
-          <button className="btn-save" onClick={save} disabled={!form.nombre.trim()}>
-            {isNew ? 'Agregar al plan' : 'Guardar'}
+          <button
+            className="btn-save btn-full"
+            onClick={save}
+            disabled={saving || !nombre.trim() || !hasChanges}
+          >
+            {saving ? 'Guardando…' : isNew ? 'Agregar al plan' : hasChanges ? 'Guardar cambios' : 'Sin cambios'}
           </button>
+
+          <div style={{
+            background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: 8,
+            padding: '10px 12px', fontSize: '.73rem', color: '#64748b', lineHeight: 1.5,
+            marginTop: 4,
+          }}>
+            <strong>Flujo:</strong> Pendiente → Inscripto → Cursando → Regular → Aprobada
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
+
+// Alias para compatibilidad con App.jsx (edición desde el plan)
+export const ElectivaModal = ElectivaPanel;
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export default function ElectivasEditor({ electivas, onUpdate, showNotas = true }) {
-  const [modal,   setModal]   = useState(null); // null | { ...electiva } to edit/add
-  const [search,  setSearch]  = useState('');
+  const [panel,  setPanel]  = useState(null);
+  const [search, setSearch] = useState('');
 
-  const CREDITOS_REQ    = 8;
-  const credAprobados   = electivas.filter(e => e.estado === 'aprobada').reduce((s, e) => s + (e.creditos ?? 0), 0);
-  const creditosFaltan  = Math.max(0, CREDITOS_REQ - credAprobados);
+  const CREDITOS_REQ   = 8;
+  const credAprobados  = electivas.filter(e => e.estado === 'aprobada').reduce((s, e) => s + (e.creditos ?? 0), 0);
+  const creditosFaltan = Math.max(0, CREDITOS_REQ - credAprobados);
 
-  // Names already added (for catalog dedup)
   const nombresAgregados = new Set(electivas.map(e => e.nombre.toLowerCase().trim()));
 
   async function handleCreate(form) {
@@ -190,7 +271,7 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
   }
 
   function openCatalog(nombre) {
-    setModal({ nombre, _fromCatalog: true });
+    setPanel({ nombre, _fromCatalog: true });
   }
 
   const filteredCatalog = CATALOGO.filter(n =>
@@ -234,13 +315,12 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
                   <span className={`card-badge badge-${e.estado}`}>{e.estado}</span>
                   {e.cuatrimestre && <span>{cuatrimestreLabel(e.cuatrimestre)}</span>}
                   <span>{e.creditos != null ? `${e.creditos} cr.` : '4 cr. (estimado)'}</span>
-                  {e.proveedor && <span>— {e.proveedor}</span>}
                   {e.periodo_anio && e.periodo_tramo && <span>{e.periodo_anio} {e.periodo_tramo}</span>}
-                  {showNotas && e.nota && <span style={{ fontWeight: 700 }}>Nota: {e.nota}</span>}
+                  {showNotas && e.nota != null && <span style={{ fontWeight: 700 }}>Nota: {e.nota}</span>}
                 </div>
               </div>
               <div className="electiva-actions">
-                <button className="btn-sm" onClick={() => setModal(e)}>Editar</button>
+                <button className="btn-sm" onClick={() => setPanel(e)}>Editar</button>
                 <button className="btn-sm danger" onClick={() => handleDelete(e.id)}>Eliminar</button>
               </div>
             </div>
@@ -283,19 +363,19 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
       <button
         className="btn-save"
         style={{ borderRadius: 8, padding: '9px 18px', fontSize: '.85rem' }}
-        onClick={() => setModal({ _fromCatalog: false })}
+        onClick={() => setPanel({ _fromCatalog: false })}
       >
         + Agregar electiva personalizada
       </button>
 
-      {/* ── Modal ── */}
-      {modal && (
-        <ElectivaModal
-          electiva={modal}
-          onSave={modal.id
-            ? (form) => handleUpdate(modal.id, form)
+      {/* ── Panel lateral ── */}
+      {panel && (
+        <ElectivaPanel
+          electiva={panel}
+          onSave={panel.id
+            ? (form) => handleUpdate(panel.id, form)
             : handleCreate}
-          onClose={() => setModal(null)}
+          onClose={() => setPanel(null)}
           showNotas={showNotas}
         />
       )}
