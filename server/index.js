@@ -219,6 +219,15 @@ if (total === 0) {
 
   // Agrega cuatrimestre a electivas (idempotente)
   try { db.exec('ALTER TABLE electivas ADD COLUMN cuatrimestre INTEGER'); } catch (_) {}
+  // Agrega período estructurado a electivas (mismo esquema que materias)
+  try { db.exec('ALTER TABLE electivas ADD COLUMN periodo_anio INTEGER'); } catch (_) {}
+  try { db.exec('ALTER TABLE electivas ADD COLUMN periodo_tramo TEXT'); } catch (_) {}
+
+  // Agrega periodos_dictado a materias (idempotente)
+  try { db.exec("ALTER TABLE materias ADD COLUMN periodos_dictado TEXT DEFAULT NULL"); } catch (_) {}
+
+  // Restricciones de período conocidas (solo se dictan en un período específico)
+  db.prepare("UPDATE materias SET periodos_dictado='A' WHERE id=36 AND (periodos_dictado IS NULL OR periodos_dictado!='A')").run();
 
   // Correlativas oficiales de EFIP I y EFIP II (editables desde la app)
   const upsertCorr = db.prepare(
@@ -259,7 +268,7 @@ app.get('/api/materias', (_req, res) => {
 
 app.put('/api/materias/:id', (req, res) => {
   const { id } = req.params;
-  const { estado, nota, periodo, periodo_anio, periodo_tramo } = req.body;
+  const { estado, nota, periodo, periodo_anio, periodo_tramo, periodos_dictado } = req.body;
   const normalizedAnio = periodo_anio !== undefined && periodo_anio !== null && periodo_anio !== ''
     ? Number(periodo_anio)
     : null;
@@ -268,8 +277,8 @@ app.put('/api/materias/:id', (req, res) => {
     ? `${normalizedAnio}-${normalizedTramo}`
     : periodo ?? null;
 
-  db.prepare('UPDATE materias SET estado=?, nota=?, periodo=?, periodo_anio=?, periodo_tramo=? WHERE id=?')
-    .run(estado, nota ?? null, normalizedPeriodo, normalizedAnio, normalizedTramo, id);
+  db.prepare('UPDATE materias SET estado=?, nota=?, periodo=?, periodo_anio=?, periodo_tramo=?, periodos_dictado=? WHERE id=?')
+    .run(estado, nota ?? null, normalizedPeriodo, normalizedAnio, normalizedTramo, periodos_dictado ?? null, id);
   res.json({ ok: true });
 });
 
@@ -309,18 +318,23 @@ app.get('/api/electivas', (_req, res) => {
 });
 
 app.post('/api/electivas', (req, res) => {
-  const { nombre, creditos, estado = 'pendiente', proveedor, periodo, nota, cuatrimestre } = req.body;
+  const { nombre, creditos, estado = 'pendiente', proveedor, nota, cuatrimestre, periodo_anio, periodo_tramo } = req.body;
   const r = db.prepare(
-    'INSERT INTO electivas (nombre, creditos, estado, proveedor, periodo, nota, cuatrimestre) VALUES (?,?,?,?,?,?,?)'
-  ).run(nombre, creditos ?? null, estado, proveedor ?? null, periodo ?? null, nota ?? null, cuatrimestre ?? null);
+    'INSERT INTO electivas (nombre, creditos, estado, proveedor, nota, cuatrimestre, periodo_anio, periodo_tramo) VALUES (?,?,?,?,?,?,?,?)'
+  ).run(nombre, creditos ?? null, estado, proveedor ?? null, nota ?? null, cuatrimestre ?? null,
+    periodo_anio != null && periodo_anio !== '' ? Number(periodo_anio) : null,
+    periodo_tramo || null);
   res.json({ ok: true, id: r.lastInsertRowid });
 });
 
 app.put('/api/electivas/:id', (req, res) => {
-  const { nombre, creditos, estado, proveedor, periodo, nota, cuatrimestre } = req.body;
+  const { nombre, creditos, estado, proveedor, nota, cuatrimestre, periodo_anio, periodo_tramo } = req.body;
   db.prepare(
-    'UPDATE electivas SET nombre=?, creditos=?, estado=?, proveedor=?, periodo=?, nota=?, cuatrimestre=? WHERE id=?'
-  ).run(nombre, creditos ?? null, estado, proveedor ?? null, periodo ?? null, nota ?? null, cuatrimestre ?? null, req.params.id);
+    'UPDATE electivas SET nombre=?, creditos=?, estado=?, proveedor=?, nota=?, cuatrimestre=?, periodo_anio=?, periodo_tramo=? WHERE id=?'
+  ).run(nombre, creditos ?? null, estado, proveedor ?? null, nota ?? null, cuatrimestre ?? null,
+    periodo_anio != null && periodo_anio !== '' ? Number(periodo_anio) : null,
+    periodo_tramo || null,
+    req.params.id);
   res.json({ ok: true });
 });
 

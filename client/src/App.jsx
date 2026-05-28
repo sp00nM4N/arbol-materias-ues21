@@ -11,6 +11,7 @@ import {
   Layers,
   Route,
   Sun,
+  TrendingUp,
 } from 'lucide-react';
 import { getMaterias, getElectivas, updateElectiva } from './api';
 import KPIPanel from './components/KPIPanel';
@@ -24,6 +25,7 @@ import CaminoPropuesto from './components/CaminoPropuesto';
 import EfipView from './components/EfipView';
 import MateriasVerano from './components/MateriasVerano';
 import AyudaView from './components/AyudaView';
+import PredictiveView from './components/PredictiveView';
 import ThemeToggle from './components/ThemeToggle';
 
 function getInitialTheme() {
@@ -105,6 +107,7 @@ export default function App() {
     { id: 'plan',      label: 'Plan de Estudios', icon: BookOpen,       target: 'plan'      },
     { id: 'arbol',     label: 'Árbol',            icon: GitBranch,      target: 'arbol'     },
     { id: 'camino',    label: 'Camino Sugerido',  icon: Route,          target: 'camino'    },
+    { id: 'predictivo', label: 'Predictivo',       icon: TrendingUp,     target: 'predictivo'},
     { id: 'notas',     label: 'Notas',            icon: BarChart3,      target: 'notas'     },
     { id: 'electivas', label: 'Electivas',        icon: Layers,         target: 'electivas' },
     { id: 'efip1',   label: 'EFIP I',            icon: ClipboardList, target: 'efip1'   },
@@ -221,6 +224,9 @@ export default function App() {
             creditosElectivas={creditosAprobados}
             showNotas={showNotas}
           />
+        )}
+        {tab === 'predictivo' && (
+          <PredictiveView materias={materias} electivas={electivas} />
         )}
         {tab === 'camino' && (
           <CaminoPropuesto

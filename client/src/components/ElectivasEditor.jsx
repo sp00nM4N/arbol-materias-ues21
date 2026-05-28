@@ -26,32 +26,36 @@ const CATALOGO = [
   'Tecnologías para la Sustentabilidad',
 ];
 
-const ESTADOS = ['pendiente', 'inscripto', 'cursando', 'regular', 'aprobada'];
+const ESTADOS  = ['pendiente', 'inscripto', 'cursando', 'regular', 'aprobada'];
+const PERIODOS = ['1A', '2A', '1B', '2B'];
 
 // ─── Modal (add from catalog or edit existing) ────────────────────────────────
 
 export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
   const [form, setForm] = useState({
-    nombre:       electiva.nombre       ?? '',
-    cuatrimestre: electiva.cuatrimestre ?? '',
-    creditos:     electiva.creditos     ?? '',
-    estado:       electiva.estado       ?? 'pendiente',
-    proveedor:    electiva.proveedor    ?? '',
-    periodo:      electiva.periodo      ?? '',
-    nota:         electiva.nota         ?? '',
+    nombre:        electiva.nombre        ?? '',
+    cuatrimestre:  electiva.cuatrimestre  ?? '',
+    creditos:      electiva.creditos      ?? '',
+    estado:        electiva.estado        ?? 'pendiente',
+    proveedor:     electiva.proveedor     ?? '',
+    periodo_anio:  electiva.periodo_anio  ?? '',
+    periodo_tramo: electiva.periodo_tramo ?? '',
+    nota:          electiva.nota          ?? '',
   });
   const isNew = !electiva.id;
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })); }
 
   async function save() {
-    if (!form.nombre.trim() || form.cuatrimestre === '') return;
+    if (!form.nombre.trim()) return;
     await onSave({
       ...form,
-      nombre: form.nombre.trim(),
-      cuatrimestre: form.cuatrimestre !== '' ? Number(form.cuatrimestre) : null,
-      creditos:     form.creditos     !== '' ? Number(form.creditos)     : null,
-      nota:         form.nota         !== '' ? Number(form.nota)         : null,
+      nombre:       form.nombre.trim(),
+      cuatrimestre: form.cuatrimestre  !== '' ? Number(form.cuatrimestre)  : null,
+      creditos:     form.creditos      !== '' ? Number(form.creditos)      : null,
+      nota:         form.nota          !== '' ? Number(form.nota)          : null,
+      periodo_anio: form.periodo_anio  !== '' ? Number(form.periodo_anio)  : null,
+      periodo_tramo: form.periodo_tramo || null,
     });
     onClose();
   }
@@ -73,9 +77,9 @@ export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
             }
           </div>
 
-          {/* Cuatrimestre — requerido */}
+          {/* Cuatrimestre — referencia en el plan de estudios */}
           <div className="field-row">
-            <label>Cuatrimestre en que la cursás <span style={{ color: '#dc2626' }}>*</span></label>
+            <label>Cuatrimestre en el plan (opcional)</label>
             <select
               value={form.cuatrimestre}
               onChange={e => set('cuatrimestre', e.target.value)}
@@ -93,7 +97,7 @@ export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
                 type="number" min="1" max="10"
                 value={form.creditos}
                 onChange={e => set('creditos', e.target.value)}
-                placeholder="Pendiente"
+                placeholder="4"
               />
             </div>
             <div className="field-row">
@@ -108,18 +112,36 @@ export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: showNotas ? '1fr 1fr' : '1fr', gap: 10 }}>
+          {/* Período real — mismo esquema que materias */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
             <div className="field-row">
-              <label>Período (opcional)</label>
-              <input value={form.periodo} onChange={e => set('periodo', e.target.value)} placeholder="2024-1" />
+              <label>Año</label>
+              <input
+                type="number" min="2020" max="2100" step="1"
+                value={form.periodo_anio}
+                onChange={e => set('periodo_anio', e.target.value)}
+                placeholder="2026"
+              />
             </div>
-            {showNotas && (
-              <div className="field-row">
-                <label>Nota (opcional)</label>
-                <input type="number" min="0" max="10" step="0.1" value={form.nota} onChange={e => set('nota', e.target.value)} placeholder="7.5" />
-              </div>
-            )}
+            <div className="field-row">
+              <label>Período</label>
+              <select
+                value={form.periodo_tramo}
+                onChange={e => set('periodo_tramo', e.target.value)}
+                style={{ border: '1px solid #e2e8f0', borderRadius: 6, padding: '7px 10px', fontSize: '.82rem' }}
+              >
+                <option value="">— Sin período —</option>
+                {PERIODOS.map(p => <option key={p} value={p}>{p}</option>)}
+              </select>
+            </div>
           </div>
+
+          {showNotas && (
+            <div className="field-row">
+              <label>Nota (opcional)</label>
+              <input type="number" min="0" max="10" step="0.1" value={form.nota} onChange={e => set('nota', e.target.value)} placeholder="7.5" />
+            </div>
+          )}
 
           <div className="field-row">
             <label>Proveedor / Institución (opcional)</label>
@@ -129,7 +151,7 @@ export function ElectivaModal({ electiva, onSave, onClose, showNotas = true }) {
 
         <div className="form-footer">
           <button className="btn-cancel" onClick={onClose}>Cancelar</button>
-          <button className="btn-save" onClick={save} disabled={!form.nombre.trim() || form.cuatrimestre === ''}>
+          <button className="btn-save" onClick={save} disabled={!form.nombre.trim()}>
             {isNew ? 'Agregar al plan' : 'Guardar'}
           </button>
         </div>
@@ -211,9 +233,9 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
                 <div className="meta">
                   <span className={`card-badge badge-${e.estado}`}>{e.estado}</span>
                   {e.cuatrimestre && <span>{cuatrimestreLabel(e.cuatrimestre)}</span>}
-                  <span>{e.creditos != null ? `${e.creditos} cr.` : 'créditos pendientes'}</span>
+                  <span>{e.creditos != null ? `${e.creditos} cr.` : '4 cr. (estimado)'}</span>
                   {e.proveedor && <span>— {e.proveedor}</span>}
-                  {e.periodo   && <span>{e.periodo}</span>}
+                  {e.periodo_anio && e.periodo_tramo && <span>{e.periodo_anio} {e.periodo_tramo}</span>}
                   {showNotas && e.nota && <span style={{ fontWeight: 700 }}>Nota: {e.nota}</span>}
                 </div>
               </div>
