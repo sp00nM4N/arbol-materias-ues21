@@ -65,6 +65,17 @@ const IDIOMA_ONGOING = {
   correlativas: [],
 };
 
+// Seminario Final dura un cuatrimestre: inicia en tramo A y continúa en tramo B.
+const SEMINARIO_FINAL_ID = 48;
+const SEMINARIO_FINAL_ONGOING = {
+  id: '__seminario_final_ongoing__',
+  nombre: 'Seminario Final en Ciencia de Datos',
+  tipo: 'seminario_final_ongoing',
+  cuatrimestre: 8,
+  periodos_dictado: null,
+  correlativas: [],
+};
+
 // ─── Period helpers ────────────────────────────────────────────────────────────
 
 export function detectPeriodContext(date = new Date()) {
@@ -108,8 +119,8 @@ function countDirectUnlocks(id, remaining) {
 
 const MAX_ITER = 80;
 
-// Seminario Final (48) y EFIP II (51) van siempre juntos en el último período
-const LAST_GROUP_IDS = new Set([48, 51]);
+// EFIP II va siempre al último período, después de Seminario Final y electivas.
+const LAST_GROUP_IDS = new Set([51]);
 
 // ─── Main scheduler ───────────────────────────────────────────────────────────
 
@@ -228,7 +239,7 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
   // Agregar electivas virtuales al remaining
   for (const ev of electivasVirtuales) remaining.set(ev.id, ev);
 
-  // Seminario Final + EFIP II se extraen del mapa y se programan juntos al final
+  // EFIP II se extrae del mapa y se programa al final
   const lastGroup = [];
   for (const id of LAST_GROUP_IDS) {
     const m = remaining.get(id);
@@ -241,6 +252,9 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
   let idiomaYear        = null;
   let idiomaPeriodsLeft = 0;
 
+  // Seminario Final ocupa dos tramos consecutivos de un mismo cuatrimestre.
+  let seminarioFinalPeriodsLeft = 0;
+
   // Inscripto state: se muestran solo una vez (en el primer período planificado)
   let inscriptoShown = false;
 
@@ -252,6 +266,7 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
     remaining.size > 0 ||
     (hasIdioma && !idiomaScheduled) ||
     idiomaPeriodsLeft > 0 ||
+    seminarioFinalPeriodsLeft > 0 ||
     (!inscriptoShown && inscriptoSubjects.length > 0) ||
     (lastGroup.length > 0 && !lastGroupScheduled);
 
@@ -262,6 +277,7 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
     const idiomaStartsNow = hasIdioma && !idiomaScheduled && period === '1A';
     const idiomaOngoingNow = idiomaScheduled && idiomaYear === year &&
       period !== '1A' && idiomaPeriodsLeft > 0;
+    const seminarioFinalOngoingNow = seminarioFinalPeriodsLeft > 0;
 
     if (idiomaStartsNow) {
       idiomaScheduled = true;
@@ -279,8 +295,9 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
     // Slots available for regular subjects this period (EFIPs no consumen cupo)
     // Idioma solo resta 1 slot el período que inicia (1A); el resto del año es adicional
     const usedByIdioma    = idiomaStartsNow ? 1 : 0;
+    const usedBySemFinal  = seminarioFinalOngoingNow ? 1 : 0;
     const usedByInscripto = inscriptoThisPeriod.filter(m => m.tipo !== 'examen').length;
-    const effectiveMax    = Math.max(0, maxPerPeriod - usedByIdioma - usedByInscripto);
+    const effectiveMax    = Math.max(0, maxPerPeriod - usedByIdioma - usedBySemFinal - usedByInscripto);
 
     // ── Find available subjects ────────────────────────────────────
     // Las inscripto aún NO están en effectiveDone, por eso sus dependientes
@@ -297,8 +314,7 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
       else availableRegular.push(m);
     }
 
-    // Grupo final (Seminario Final + EFIP II): solo cuando no queda ninguna otra materia
-    // Se tratan como grupo: se ignoran las correlativas internas entre ellos
+    // Grupo final (EFIP II): solo cuando no queda ninguna otra materia ni bloques en curso
     if (lastGroup.length > 0 && !lastGroupScheduled && remaining.size === 0 && availableRegular.length === 0) {
       const groupReady = lastGroup.every(m =>
         (m.correlativas ?? [])
@@ -325,6 +341,7 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
     const items = [];
     if (idiomaStartsNow)  items.push(IDIOMA_START);
     if (idiomaOngoingNow) items.push(IDIOMA_ONGOING);
+    if (seminarioFinalOngoingNow) items.push(SEMINARIO_FINAL_ONGOING);
     // Inscripto subjects marcados para distinguirlos visualmente
     for (const m of inscriptoThisPeriod) items.push({ ...m, _inscripto: true });
     items.push(...taken);
@@ -333,7 +350,8 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
       schedule.push({ year, period, status: 'planned', items });
       for (const m of taken) {
         remaining.delete(m.id);
-        effectiveDone.add(m.id);
+        if (m.id === SEMINARIO_FINAL_ID) seminarioFinalPeriodsLeft = 1;
+        else effectiveDone.add(m.id);
         if (LAST_GROUP_IDS.has(m.id)) lastGroupScheduled = true;
       }
     }
@@ -348,6 +366,12 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
     // Decrement idioma counter AFTER building the period entry
     if (idiomaOngoingNow) idiomaPeriodsLeft--;
 
+    // Seminario Final se marca completo al finalizar su segundo tramo.
+    if (seminarioFinalOngoingNow) {
+      seminarioFinalPeriodsLeft--;
+      if (seminarioFinalPeriodsLeft === 0) effectiveDone.add(SEMINARIO_FINAL_ID);
+    }
+
     ({ period, year } = advancePeriod(period, year));
   }
 
@@ -355,7 +379,9 @@ export function buildPredictiveSchedule(materias, electivas = [], opts = {}) {
   const totalToSchedule = toSchedule.length + inscriptoSubjects.length + electivasVirtuales.length;
   const totalScheduled  = plannedEntries.reduce(
     (acc, s) => acc + s.items.filter(i =>
-      i.id !== '__idioma_ongoing__' && !i._inscripto
+      i.id !== '__idioma_ongoing__' &&
+      i.id !== '__seminario_final_ongoing__' &&
+      !i._inscripto
     ).length,
     0
   );

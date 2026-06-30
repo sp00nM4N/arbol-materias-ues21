@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { updateMateria, addCorrelativa, deleteCorrelativa } from '../api';
 import { cuatrimestreLabel } from '../utils/cuatrimestres';
+import EstadoIcon from './EstadoIcon';
 
 const ESTADOS = [
   { key: 'pendiente', label: 'Pendiente', icon: '○' },
@@ -122,8 +123,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
     || String(periodoTramo) !== String(materia.periodo_tramo ?? '');
 
   const headerColor = {
-    aprobada: '#16a34a', cursando: '#0891b2', inscripto: '#7c3aed',
-    regular: '#ea580c', pendiente: '#64748b',
+    aprobada: '#48A433', cursando: '#0F6B84', inscripto: '#B0269E',
+    regular: '#6B7280', pendiente: '#F59E0B',
   }[materia.estado] ?? '#64748b';
 
   const tipoLabel = isExamen ? '📝 Examen Integrador' : isIngreso ? '🎓 Materia de Ingreso' : null;
@@ -154,11 +155,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
           </div>
 
           <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
-            <span style={{
-              background: headerColor, color: '#fff',
-              fontSize: '.72rem', fontWeight: 700, padding: '3px 10px',
-              borderRadius: 999, textTransform: 'uppercase', letterSpacing: '.04em',
-            }}>
+            <span className={`panel-status-pill estado-pill-${materia.estado}`} style={{ '--estado-color': headerColor }}>
+              <EstadoIcon estado={materia.estado} size={13} strokeWidth={2.8} />
               {ESTADO_LABELS[materia.estado] ?? materia.estado}
             </span>
             {showNotas && materia.nota && <span style={{ fontSize: '.78rem', color: '#64748b', fontWeight: 600 }}>Nota: {materia.nota}</span>}
@@ -179,7 +177,8 @@ export default function SidePanel({ materia, materias, electivas, onClose, onUpd
                   className={`estado-btn e-${e.key} ${estado === e.key ? 'selected' : ''}`}
                   onClick={() => setEstado(e.key)}
                 >
-                  <span>{e.icon}</span> {e.label}
+                  <EstadoIcon estado={e.key} size={15} strokeWidth={2.6} />
+                  {e.label}
                 </button>
               ))}
             </div>

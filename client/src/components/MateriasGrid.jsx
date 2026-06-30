@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import MateriaCard from './MateriaCard';
 import { cuatrimestreLabel } from '../utils/cuatrimestres';
 import { formatMateriaPeriodo } from '../utils/periodos';
+import EstadoIcon from './EstadoIcon';
 
 const YEARS = [1, 2, 3, 4];
 const CUATRIMESTRE_PAIRS = [[1,2],[3,4],[5,6],[7,8]];
@@ -81,12 +82,7 @@ function EfipCard({ efip, materias, creditosElectivas, selectedId, onSelect }) {
             <span className="efip-titulo">{info.titulo}</span>
             <span className="efip-subtitulo">{info.subtitulo}</span>
           </div>
-          <span className={`card-badge badge-${visual}`}>
-            {visual === 'disponible' ? 'Disponible' :
-             visual === 'aprobada'   ? 'Aprobado'   :
-             visual === 'inscripto'  ? 'Inscripto'  :
-             visual === 'bloqueada'  ? 'Bloqueado'  : 'Pendiente'}
-          </span>
+          <EstadoIcon estado={visual} className="efip-card-state-icon" />
         </div>
         <p className="efip-desc">{info.descripcion}</p>
         <div className="efip-reqs-row">
@@ -108,11 +104,6 @@ function EfipCard({ efip, materias, creditosElectivas, selectedId, onSelect }) {
 
 // ─── Main grid ────────────────────────────────────────────────────────────────
 
-const ESTADO_LABELS_E = {
-  aprobada:'Aprobada', cursando:'Cursando', inscripto:'Inscripto',
-  regular:'Regular', pendiente:'Pendiente',
-};
-
 function ElectivaCard({ electiva, onEdit }) {
   return (
     <div
@@ -131,8 +122,8 @@ function ElectivaCard({ electiva, onEdit }) {
     >
       <div className="electiva-grid-badge">Electiva</div>
       <div className="electiva-grid-nombre">{electiva.nombre}</div>
+      <EstadoIcon estado={electiva.estado} className="electiva-grid-state-icon" />
       <div className="electiva-grid-meta">
-        <span className={`card-badge badge-${electiva.estado}`}>{ESTADO_LABELS_E[electiva.estado] ?? electiva.estado}</span>
         {electiva.creditos != null && <span className="card-nota">{electiva.creditos} cr.</span>}
         {electiva.periodo && <span className="card-periodo">{electiva.periodo}</span>}
       </div>

@@ -33,7 +33,7 @@ Proyección de finalización de la carrera basada en el estado actual:
 - Las materias con estado **inscripto** se muestran en el primer período planificado; sus dependientes no se desbloquean hasta el período siguiente.
 - Las **electivas pendientes/inscriptas** aparecen con su nombre real en el timeline; si tienen período y año definidos, se programan exactamente en ese período.
 - Si no se alcanzaron los **8 créditos de electivas**, se agregan electivas genéricas ("Electiva N") para cubrir el déficit.
-- **Seminario Final en Ciencia de Datos** y **EFIP II** siempre se programan juntos en el último período, después de todo lo demás.
+- **Seminario Final en Ciencia de Datos** dura un cuatrimestre completo: inicia en tramo A y continúa en tramo B. **EFIP II** queda después de completarlo.
 
 ### Notas
 - Dashboard de notas con métricas de avance (promedio, máxima, mínima, distribución).

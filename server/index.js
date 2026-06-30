@@ -228,6 +228,7 @@ if (total === 0) {
 
   // Restricciones de período conocidas (solo se dictan en un período específico)
   db.prepare("UPDATE materias SET periodos_dictado='A' WHERE id=36 AND (periodos_dictado IS NULL OR periodos_dictado!='A')").run();
+  db.prepare("UPDATE materias SET periodos_dictado='A' WHERE id=48 AND (periodos_dictado IS NULL OR periodos_dictado!='A')").run();
 
   // Correlativas oficiales de EFIP I y EFIP II (editables desde la app)
   const upsertCorr = db.prepare(

@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { cuatrimestreLabel } from '../utils/cuatrimestres';
 import { formatMateriaPeriodo } from '../utils/periodos';
+import EstadoIcon from './EstadoIcon';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -345,7 +346,10 @@ export default function NotasDashboard({ materias, electivas, showNotas = true }
                     </span>
                   </td>
                   <td>
-                    <span className={`card-badge badge-${m.estado}`}>{m.estado}</span>
+                    <span className={`estado-chip estado-chip-${m.estado}`}>
+                      <EstadoIcon estado={m.estado} size={14} strokeWidth={2.6} />
+                      {m.estado}
+                    </span>
                   </td>
                 </tr>
               ))}

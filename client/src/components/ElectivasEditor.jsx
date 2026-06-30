@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createElectiva, updateElectiva, deleteElectiva } from '../api';
 import { CUATRIMESTRES, cuatrimestreLabel } from '../utils/cuatrimestres';
+import EstadoIcon from './EstadoIcon';
 
 // ─── Catálogo oficial de electivas MEC ───────────────────────────────────────
 
@@ -42,8 +43,8 @@ const ESTADO_LABELS = {
 const PERIODOS = ['1A', '2A', '1B', '2B'];
 
 const HEADER_COLOR = {
-  aprobada: '#16a34a', cursando: '#0891b2', inscripto: '#7c3aed',
-  regular: '#ea580c', pendiente: '#64748b',
+  aprobada: '#48A433', cursando: '#0F6B84', inscripto: '#B0269E',
+  regular: '#6B7280', pendiente: '#F59E0B',
 };
 
 // ─── Panel lateral (reemplaza al modal) ──────────────────────────────────────
@@ -113,11 +114,8 @@ export function ElectivaPanel({ electiva, onSave, onClose, showNotas = true }) {
           </div>
           {!isNew && (
             <div style={{ marginTop: 10, display: 'flex', gap: 8, alignItems: 'center' }}>
-              <span style={{
-                background: headerColor, color: '#fff',
-                fontSize: '.72rem', fontWeight: 700, padding: '3px 10px',
-                borderRadius: 999, textTransform: 'uppercase', letterSpacing: '.04em',
-              }}>
+              <span className={`panel-status-pill estado-pill-${electiva.estado}`} style={{ '--estado-color': headerColor }}>
+                <EstadoIcon estado={electiva.estado} size={13} strokeWidth={2.8} />
                 {ESTADO_LABELS[electiva.estado] ?? electiva.estado}
               </span>
               {showNotas && electiva.nota != null && (
@@ -162,7 +160,8 @@ export function ElectivaPanel({ electiva, onSave, onClose, showNotas = true }) {
                   className={`estado-btn e-${e.key} ${estado === e.key ? 'selected' : ''}`}
                   onClick={() => setEstado(e.key)}
                 >
-                  <span>{e.icon}</span> {e.label}
+                  <EstadoIcon estado={e.key} size={15} strokeWidth={2.6} />
+                  {e.label}
                 </button>
               ))}
             </div>
@@ -309,10 +308,11 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
           <div className="elec-block-title">Mis electivas ({electivas.length})</div>
           {electivas.map(e => (
             <div key={e.id} className={`electiva-card ${e.estado}`}>
+              <div className="electiva-card-state-bar" aria-hidden="true" />
               <div className="electiva-info">
                 <div className="nombre">{e.nombre}</div>
+                <EstadoIcon estado={e.estado} className="electiva-card-state-icon" />
                 <div className="meta">
-                  <span className={`card-badge badge-${e.estado}`}>{e.estado}</span>
                   {e.cuatrimestre && <span>{cuatrimestreLabel(e.cuatrimestre)}</span>}
                   <span>{e.creditos != null ? `${e.creditos} cr.` : '4 cr. (estimado)'}</span>
                   {e.periodo_anio && e.periodo_tramo && <span>{e.periodo_anio} {e.periodo_tramo}</span>}

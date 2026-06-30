@@ -879,6 +879,21 @@ button:focus-visible, input:focus-visible, select:focus-visible {
 .estado-btn.e-regular.selected    { background: var(--regular);    }
 .estado-btn.e-aprobada.selected   { background: var(--aprobada);   }
 
+.panel-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: color-mix(in srgb, var(--estado-color) 14%, #fff);
+  border: 1px solid color-mix(in srgb, var(--estado-color) 42%, transparent);
+  color: var(--estado-color);
+  font-size: .72rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+}
+
 /* ── Extra fields ─────────────────────────────────────────── */
 .extra-fields { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
 .field-row { display: flex; flex-direction: column; gap: 3px; }
@@ -3445,6 +3460,17 @@ select:focus,
   color: var(--text-secondary);
   font-style: italic;
 }
+.pred-chip-seminario-ongoing {
+  background: rgba(124,58,237,.08);
+  border-color: rgba(124,58,237,.24);
+  color: var(--text-secondary);
+  font-style: italic;
+}
+[data-theme="dark"] .pred-chip-seminario-ongoing {
+  background: rgba(167,139,250,.10);
+  border-color: rgba(167,139,250,.28);
+  color: #ddd6fe;
+}
 .pred-chip-period-idioma {
   background: #0f766e;
   letter-spacing: .02em;
@@ -3523,4 +3549,348 @@ select:focus,
   .pred-gutter { width: 20px; }
   .pred-entry-body { padding-left: 10px; }
   .pred-period-name { display: none; }
+}
+
+/* Inscripto: keep Plan and Tree aligned with the violet editing state */
+.materia-card.inscripto,
+.tree-node.inscripto {
+  background: linear-gradient(135deg, #EDE9FE, #F5F3FF);
+  border-color: #A78BFA;
+  color: #4C1D95;
+}
+.badge-inscripto {
+  background: #7C3AED;
+  color: #fff;
+}
+[data-theme="dark"] .materia-card.inscripto,
+[data-theme="dark"] .tree-node.inscripto {
+  background: linear-gradient(135deg, rgba(124,58,237,.24), rgba(91,33,182,.18));
+  border-color: rgba(167,139,250,.55);
+  color: #F5F3FF;
+}
+[data-theme="dark"] .badge-inscripto {
+  background: #8B5CF6;
+  color: #fff;
+}
+
+/* Tree cards: compact visual-only state style */
+.tree-node {
+  --tree-state: #64748B;
+  position: relative;
+  min-height: 128px;
+  padding: 30px 24px 30px 24px;
+  background: #fff !important;
+  border: 1px solid #DDE3EA !important;
+  border-radius: 10px !important;
+  box-shadow: none;
+  color: #0F172A !important;
+  overflow: hidden;
+}
+.tree-node:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(15, 42, 51, .10);
+}
+.tree-node.selected-card {
+  outline: 3px solid rgba(37, 99, 235, .28);
+  outline-offset: 3px;
+}
+.tree-node-name {
+  color: #020617 !important;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+  margin: 0;
+}
+.tree-node-state-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  color: var(--tree-state);
+}
+.tree-node-meta,
+.tree-electiva-badge {
+  display: none;
+}
+.tree-node.aprobada {
+  --tree-state: #48A433;
+}
+.tree-node.inscripto {
+  --tree-state: #B0269E;
+}
+.tree-node.pendiente {
+  --tree-state: #F59E0B;
+}
+.tree-node.cursando {
+  --tree-state: #0F6B84;
+}
+.tree-node.bloqueada {
+  --tree-state: #D00000;
+}
+.tree-node.disponible {
+  --tree-state: #F59E0B;
+}
+.tree-node.regular {
+  --tree-state: #EA580C;
+}
+.tree-node.tree-node-examen {
+  border-style: solid !important;
+}
+.tree-node.tree-node-electiva {
+  border-style: solid !important;
+}
+[data-theme="dark"] .tree-node {
+  background: #0D1D21 !important;
+  border-color: rgba(226, 232, 240, .55) !important;
+  color: #F8FAFC !important;
+}
+[data-theme="dark"] .tree-node-name {
+  color: #F8FAFC !important;
+}
+
+/* Unified subject state cards across Plan, Tree, Electives and tables */
+.materia-card,
+.electiva-grid-card,
+.electiva-card,
+.efip-card,
+.tree-node {
+  --subject-state: #64748B;
+}
+
+.materia-card.aprobada,
+.electiva-grid-card.estado-aprobada,
+.electiva-card.aprobada,
+.efip-card-aprobada,
+.tree-node.aprobada,
+.estado-chip-aprobada {
+  --subject-state: #48A433;
+}
+
+.materia-card.inscripto,
+.electiva-grid-card.estado-inscripto,
+.electiva-card.inscripto,
+.efip-card-inscripto,
+.tree-node.inscripto,
+.estado-chip-inscripto {
+  --subject-state: #B0269E;
+}
+
+.materia-card.pendiente,
+.materia-card.disponible,
+.electiva-grid-card.estado-pendiente,
+.electiva-card.pendiente,
+.efip-card-pendiente,
+.efip-card-disponible,
+.tree-node.pendiente,
+.tree-node.disponible,
+.estado-chip-pendiente,
+.estado-chip-disponible {
+  --subject-state: #F59E0B;
+}
+
+.materia-card.cursando,
+.electiva-grid-card.estado-cursando,
+.electiva-card.cursando,
+.efip-card-cursando,
+.tree-node.cursando,
+.estado-chip-cursando {
+  --subject-state: #0F6B84;
+}
+
+.materia-card.bloqueada,
+.efip-card-bloqueada,
+.tree-node.bloqueada,
+.estado-chip-bloqueada {
+  --subject-state: #D00000;
+}
+
+.materia-card.regular,
+.electiva-grid-card.estado-regular,
+.electiva-card.regular,
+.efip-card-regular,
+.tree-node.regular,
+.estado-chip-regular {
+  --subject-state: #6B7280;
+}
+
+.estado-btn.e-pendiente {
+  border-color: #F59E0B;
+  color: #F59E0B;
+}
+.estado-btn.e-inscripto {
+  border-color: #B0269E;
+  color: #B0269E;
+}
+.estado-btn.e-cursando {
+  border-color: #0F6B84;
+  color: #0F6B84;
+}
+.estado-btn.e-regular {
+  border-color: #6B7280;
+  color: #6B7280;
+}
+.estado-btn.e-aprobada {
+  border-color: #48A433;
+  color: #48A433;
+}
+.estado-btn.e-pendiente.selected {
+  background: #F59E0B;
+}
+.estado-btn.e-inscripto.selected {
+  background: #B0269E;
+}
+.estado-btn.e-cursando.selected {
+  background: #0F6B84;
+}
+.estado-btn.e-regular.selected {
+  background: #6B7280;
+}
+.estado-btn.e-aprobada.selected {
+  background: #48A433;
+}
+
+[data-theme="dark"] .panel-status-pill {
+  background: color-mix(in srgb, var(--estado-color) 18%, #0D1D21);
+  border-color: color-mix(in srgb, var(--estado-color) 50%, transparent);
+}
+
+.materia-card {
+  position: relative;
+  min-height: 82px;
+  padding: 21px 42px 14px 16px !important;
+  background: #fff !important;
+  border: 1px solid #DDE3EA !important;
+  border-radius: 8px !important;
+  color: #0F172A !important;
+  overflow: hidden;
+}
+
+.materia-card-state-icon,
+.electiva-grid-state-icon,
+.electiva-card-state-icon,
+.efip-card-state-icon {
+  color: var(--subject-state);
+  flex: 0 0 auto;
+}
+
+.materia-card-state-icon,
+.electiva-grid-state-icon,
+.electiva-card-state-icon {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
+
+.materia-card .card-name {
+  margin: 0;
+  padding-right: 6px;
+  color: #020617 !important;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0;
+}
+
+.materia-card .card-meta {
+  display: none;
+}
+
+.materia-card .card-periodo,
+.materia-card .grade-progress {
+  max-width: calc(100% - 28px);
+}
+
+.electiva-grid-card {
+  position: relative;
+  min-height: 88px;
+  padding: 18px 42px 12px 14px !important;
+  background: #fff !important;
+  border: 1px solid #DDE3EA !important;
+  border-radius: 8px !important;
+  overflow: hidden;
+}
+
+.electiva-grid-badge {
+  color: var(--subject-state) !important;
+}
+
+.electiva-grid-nombre {
+  color: #020617 !important;
+  font-weight: 800;
+}
+
+.electiva-grid-meta {
+  padding-right: 28px;
+}
+
+.electiva-card {
+  position: relative;
+  padding: 17px 96px 13px 16px !important;
+  background: #fff !important;
+  border: 1px solid #DDE3EA !important;
+  border-radius: 8px !important;
+  border-left-width: 1px !important;
+  overflow: hidden;
+}
+
+.electiva-card .nombre {
+  color: #020617;
+  font-weight: 800;
+  padding-right: 26px;
+}
+
+.electiva-card .meta {
+  padding-right: 26px;
+}
+
+.efip-card {
+  position: relative;
+  background: #fff !important;
+  border: 1px solid #DDE3EA !important;
+  border-radius: 8px !important;
+  color: #0F172A !important;
+  overflow: hidden;
+}
+
+.efip-card-state-icon {
+  color: var(--subject-state);
+}
+
+.tree-node {
+  --tree-state: var(--subject-state);
+}
+
+.estado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 9px;
+  border: 1px solid color-mix(in srgb, var(--subject-state) 45%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--subject-state) 12%, #fff);
+  color: var(--subject-state);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .materia-card,
+[data-theme="dark"] .electiva-grid-card,
+[data-theme="dark"] .electiva-card,
+[data-theme="dark"] .efip-card {
+  background: #0D1D21 !important;
+  border-color: rgba(226, 232, 240, .55) !important;
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .materia-card .card-name,
+[data-theme="dark"] .electiva-grid-nombre,
+[data-theme="dark"] .electiva-card .nombre {
+  color: #F8FAFC !important;
+}
+
+[data-theme="dark"] .estado-chip {
+  background: color-mix(in srgb, var(--subject-state) 22%, #0D1D21);
+  border-color: color-mix(in srgb, var(--subject-state) 55%, transparent);
 }

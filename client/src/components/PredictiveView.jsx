@@ -37,6 +37,16 @@ function SubjectChip({ m }) {
       </span>
     );
   }
+  if (m.tipo === 'seminario_final_ongoing') {
+    return (
+      <span className="pred-chip pred-chip-seminario-ongoing">
+        🧩 Seminario Final en curso
+        <span className="pred-chip-period" title="Segundo tramo del cuatrimestre">
+          cuatrimestre
+        </span>
+      </span>
+    );
+  }
   return (
     <span className={`pred-chip pred-chip-${m.tipo}${m._inscripto ? ' pred-chip-inscripto' : ''}`}>
       {m.tipo === 'examen' ? '📝 ' : ''}

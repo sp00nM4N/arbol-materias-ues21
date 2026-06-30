@@ -1,16 +1,7 @@
 import { useMemo } from 'react';
 import { Lock, LockOpen, Key } from 'lucide-react';
 import { formatMateriaPeriodo } from '../utils/periodos';
-
-const LABELS = {
-  aprobada:  'Aprobada',
-  cursando:  'Cursando',
-  inscripto: 'Inscripto',
-  regular:   'Regular',
-  disponible:'Disponible',
-  bloqueada: 'Bloqueada',
-  pendiente: 'Pendiente',
-};
+import EstadoIcon from './EstadoIcon';
 
 export function computeVisualEstado(materia, estadoMap) {
   if (materia.estado !== 'pendiente') return materia.estado;
@@ -58,9 +49,7 @@ export default function MateriaCard({ materia, estadoMap, selectedId, onSelect, 
         </div>
       )}
       <div className="card-name">{materia.nombre}</div>
-      <div className="card-meta">
-        <span className={`card-badge badge-${visual}`}>{LABELS[visual]}</span>
-      </div>
+      <EstadoIcon estado={visual} className="materia-card-state-icon" />
       {periodo && <div className="card-periodo">{periodo}</div>}
       {showNotas && materia.nota != null && (
         <div className="grade-progress">

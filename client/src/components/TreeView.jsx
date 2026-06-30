@@ -1,5 +1,6 @@
 import { useRef, useState, useLayoutEffect, useMemo } from 'react';
 import { computeVisualEstado } from './MateriaCard';
+import EstadoIcon from './EstadoIcon';
 import { CUATRIMESTRE_LABELS } from '../utils/cuatrimestres';
 
 // ─── Layout constants ─────────────────────────────────────────────────────────
@@ -26,11 +27,6 @@ const YEAR_GROUPS = [
   { label: '3° Año',  span: 3, color: '#0369a1' },
   { label: '4° Año',  span: 3, color: '#4338ca' },
 ];
-
-const VISUAL_LABELS = {
-  aprobada:'Aprobada', cursando:'Cursando', inscripto:'Inscripto',
-  regular:'Regular', disponible:'Disponible', bloqueada:'Bloqueada', pendiente:'Pendiente',
-};
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -209,12 +205,13 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
                     style={isElectiva && !onEditElectiva ? { cursor: 'default' } : undefined}
                     title={isElectiva && onEditElectiva ? 'Editar electiva' : undefined}
                   >
-                    {isElectiva && <div className="tree-electiva-badge">Electiva</div>}
                     <div className="tree-node-name">{m.nombre}</div>
-                    <div className="tree-node-meta">
-                      <span className={`card-badge badge-${visual}`}>{VISUAL_LABELS[visual] ?? visual}</span>
-                      {isElectiva && m.creditos != null && <span className="card-nota">{m.creditos} cr.</span>}
-                    </div>
+                    <EstadoIcon
+                      estado={visual}
+                      className="tree-node-state-icon"
+                      size={21}
+                      strokeWidth={2.6}
+                    />
                   </div>
                 );
               })}
