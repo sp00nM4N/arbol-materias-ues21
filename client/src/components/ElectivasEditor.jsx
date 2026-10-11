@@ -310,8 +310,12 @@ export default function ElectivasEditor({ electivas, onUpdate, showNotas = true 
             <div key={e.id} className={`electiva-card ${e.estado}`}>
               <div className="electiva-card-state-bar" aria-hidden="true" />
               <div className="electiva-info">
-                <div className="nombre">{e.nombre}</div>
-                <EstadoIcon estado={e.estado} className="electiva-card-state-icon" />
+                <div className="subject-title-row">
+                  <span className="subject-state-icon-wrap">
+                    <EstadoIcon estado={e.estado} className="electiva-card-state-icon" />
+                  </span>
+                  <div className="nombre">{e.nombre}</div>
+                </div>
                 <div className="meta">
                   {e.cuatrimestre && <span>{cuatrimestreLabel(e.cuatrimestre)}</span>}
                   <span>{e.creditos != null ? `${e.creditos} cr.` : '4 cr. (estimado)'}</span>

@@ -1,4 +1,5 @@
 import { useRef, useState, useLayoutEffect, useMemo } from 'react';
+import clsx from 'clsx';
 import { computeVisualEstado } from './MateriaCard';
 import EstadoIcon from './EstadoIcon';
 import { CUATRIMESTRE_LABELS } from '../utils/cuatrimestres';
@@ -156,7 +157,7 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
         {/* ── Cuatrimestre sub-headers ── */}
         <div className="tree-subhdr-row" style={{ gap: COL_GAP }}>
           {COL_KEYS.map(key => (
-            <div key={key} className={`tree-subhdr${key.startsWith('efip') ? ' tree-subhdr-efip' : ''}`} style={{ width: COL_W }}>
+            <div key={key} className={clsx('tree-subhdr', { 'tree-subhdr-efip': key.startsWith('efip') })} style={{ width: COL_W }}>
               {COL_LABEL[key]}
             </div>
           ))}
@@ -182,7 +183,7 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
           {COL_KEYS.map(colKey => (
             <div
               key={colKey}
-              className={`tree-col${colKey.startsWith('efip') ? ' tree-col-efip' : ''}`}
+              className={clsx('tree-col', { 'tree-col-efip': colKey.startsWith('efip') })}
               style={{ width: COL_W, gap: NODE_GAP }}
             >
               {colMaterias[colKey].map(m => {
@@ -194,24 +195,49 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
                     : computeVisualEstado(m, estadoMap);
                 const isSelected = !isElectiva && m.id === selectedId;
                 const nodeKey = isElectiva ? `e-${m.id}` : m.id;
+                const isInteractive = !isElectiva || !!onEditElectiva;
+                const handleClick = () => isElectiva ? onEditElectiva?.(m) : onSelect(m.id);
+                const handleKeyDown = (e) => {
+                  if (!isInteractive) return;
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleClick();
+                  }
+                };
                 return (
                   <div
                     key={nodeKey}
                     ref={el => { if (!isElectiva) nodeRefs.current[m.id] = el; }}
-                    className={`tree-node ${visual}${isSelected ? ' selected-card' : ''}${m.tipo === 'examen' ? ' tree-node-examen' : ''}${isElectiva ? ' tree-node-electiva' : ''}`}
-                    onClick={() => isElectiva ? onEditElectiva?.(m) : onSelect(m.id)}
+                    role={isInteractive ? 'button' : undefined}
+                    tabIndex={isInteractive ? 0 : undefined}
+                    aria-pressed={isSelected || undefined}
+                    aria-label={`${m.nombre} — ${visual}`}
+                    className={clsx(
+                      'tree-node',
+                      visual,
+                      {
+                        'selected-card': isSelected,
+                        'tree-node-examen': m.tipo === 'examen',
+                        'tree-node-electiva': isElectiva,
+                      }
+                    )}
+                    onClick={handleClick}
+                    onKeyDown={handleKeyDown}
                     onMouseEnter={() => !isElectiva && setHovered(m.id)}
                     onMouseLeave={() => setHovered(null)}
                     style={isElectiva && !onEditElectiva ? { cursor: 'default' } : undefined}
-                    title={isElectiva && onEditElectiva ? 'Editar electiva' : undefined}
                   >
-                    <div className="tree-node-name">{m.nombre}</div>
-                    <EstadoIcon
-                      estado={visual}
-                      className="tree-node-state-icon"
-                      size={21}
-                      strokeWidth={2.6}
-                    />
+                    <div className="subject-title-row tree-title-row">
+                      <span className="subject-state-icon-wrap" aria-hidden="true">
+                        <EstadoIcon
+                          estado={visual}
+                          className="tree-node-state-icon"
+                          size={20}
+                          strokeWidth={2.6}
+                        />
+                      </span>
+                      <div className="tree-node-name">{m.nombre}</div>
+                    </div>
                   </div>
                 );
               })}
@@ -223,11 +249,11 @@ export default function TreeView({ materias, electivas = [], selectedId, onSelec
         <div className="tree-legend">
           <span>Conexiones:</span>
           <span className="tree-legend-item">
-            <svg width="28" height="10"><line x1="0" y1="5" x2="28" y2="5" stroke="#16a34a" strokeWidth="2"/></svg>
+            <svg width="28" height="10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="#16a34a" strokeWidth="2"/></svg>
             Prerequisito cumplido
           </span>
           <span className="tree-legend-item">
-            <svg width="28" height="10"><line x1="0" y1="5" x2="28" y2="5" stroke="#dc2626" strokeWidth="2" strokeDasharray="5 3"/></svg>
+            <svg width="28" height="10" aria-hidden="true"><line x1="0" y1="5" x2="28" y2="5" stroke="#dc2626" strokeWidth="2" strokeDasharray="5 3"/></svg>
             Prerequisito pendiente
           </span>
           <span style={{ color: '#94a3b8' }}>— Pasá el cursor sobre una materia para ver sus conexiones</span>

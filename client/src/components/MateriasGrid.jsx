@@ -78,11 +78,15 @@ function EfipCard({ efip, materias, creditosElectivas, selectedId, onSelect }) {
       <div className="efip-icon-col">{info.icon}</div>
       <div className="efip-body">
         <div className="efip-header-row">
-          <div>
-            <span className="efip-titulo">{info.titulo}</span>
-            <span className="efip-subtitulo">{info.subtitulo}</span>
+          <div className="subject-title-row efip-title-row">
+            <span className="subject-state-icon-wrap">
+              <EstadoIcon estado={visual} className="efip-card-state-icon" />
+            </span>
+            <div>
+              <span className="efip-titulo">{info.titulo}</span>
+              <span className="efip-subtitulo">{info.subtitulo}</span>
+            </div>
           </div>
-          <EstadoIcon estado={visual} className="efip-card-state-icon" />
         </div>
         <p className="efip-desc">{info.descripcion}</p>
         <div className="efip-reqs-row">
@@ -121,8 +125,12 @@ function ElectivaCard({ electiva, onEdit }) {
       }}
     >
       <div className="electiva-grid-badge">Electiva</div>
-      <div className="electiva-grid-nombre">{electiva.nombre}</div>
-      <EstadoIcon estado={electiva.estado} className="electiva-grid-state-icon" />
+      <div className="subject-title-row">
+        <span className="subject-state-icon-wrap">
+          <EstadoIcon estado={electiva.estado} className="electiva-grid-state-icon" />
+        </span>
+        <div className="electiva-grid-nombre">{electiva.nombre}</div>
+      </div>
       <div className="electiva-grid-meta">
         {electiva.creditos != null && <span className="card-nota">{electiva.creditos} cr.</span>}
         {electiva.periodo && <span className="card-periodo">{electiva.periodo}</span>}

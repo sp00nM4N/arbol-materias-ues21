@@ -1,10 +1,10 @@
 import {
   CalendarDays,
   CheckCircle2,
-  CircleDashed,
-  CircleMinus,
   Clock3,
-  PencilLine,
+  Lock,
+  LockOpen,
+  TimerReset,
 } from 'lucide-react';
 
 export const ESTADO_LABELS = {
@@ -20,15 +20,15 @@ export const ESTADO_LABELS = {
 export const ESTADO_ICONS = {
   aprobada: CheckCircle2,
   inscripto: CalendarDays,
-  pendiente: CircleDashed,
-  disponible: CircleDashed,
-  cursando: PencilLine,
-  bloqueada: CircleMinus,
+  pendiente: LockOpen,
+  disponible: LockOpen,
+  cursando: TimerReset,
+  bloqueada: Lock,
   regular: Clock3,
 };
 
-export default function EstadoIcon({ estado, className = '', size = 21, strokeWidth = 2.6 }) {
-  const Icon = ESTADO_ICONS[estado] ?? CircleDashed;
+export default function EstadoIcon({ estado, className = '', size = 16, strokeWidth = 2.6 }) {
+  const Icon = ESTADO_ICONS[estado] ?? LockOpen;
   return (
     <Icon
       className={className}

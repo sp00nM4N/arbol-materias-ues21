@@ -12,6 +12,8 @@ import {
   Route,
   Sun,
   TrendingUp,
+  X,
+  AlertTriangle,
 } from 'lucide-react';
 import { getMaterias, getElectivas, updateElectiva } from './api';
 import KPIPanel from './components/KPIPanel';
@@ -31,10 +33,45 @@ import ThemeToggle from './components/ThemeToggle';
 function getInitialTheme() {
   const saved = localStorage.getItem('ues21-theme');
   if (saved === 'dark' || saved === 'light') return saved;
-
   const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)').matches;
   return prefersDark ? 'dark' : 'light';
 }
+
+// ─── Toast notification ───────────────────────────────────────────────────────
+
+function Toast({ message, onDismiss }) {
+  useEffect(() => {
+    const t = setTimeout(onDismiss, 5000);
+    return () => clearTimeout(t);
+  }, [onDismiss]);
+  return (
+    <div className="toast toast-error" role="alert" aria-live="assertive">
+      <AlertTriangle size={16} aria-hidden="true" />
+      <span>{message}</span>
+      <button className="toast-close" onClick={onDismiss} aria-label="Cerrar notificación">
+        <X size={14} />
+      </button>
+    </div>
+  );
+}
+
+// ─── Loading skeleton ─────────────────────────────────────────────────────────
+
+function LoadingScreen() {
+  return (
+    <div className="loading-screen" aria-label="Cargando datos" aria-busy="true">
+      <div className="loading-inner">
+        <GraduationCap size={40} strokeWidth={1.5} aria-hidden="true" />
+        <div className="loading-dots">
+          <span /><span /><span />
+        </div>
+        <p>Cargando materias…</p>
+      </div>
+    </div>
+  );
+}
+
+// ─── App ──────────────────────────────────────────────────────────────────────
 
 export default function App() {
   const [materias, setMaterias]     = useState([]);
@@ -45,6 +82,7 @@ export default function App() {
   const [showNotas, setShowNotas] = useState(() => localStorage.getItem('showNotas') !== 'false');
   const [theme, setTheme] = useState(getInitialTheme);
   const [loading, setLoading]       = useState(true);
+  const [error, setError]           = useState(null);
 
   const reloadMaterias = useCallback(async () => {
     const data = await getMaterias();
@@ -57,7 +95,9 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    Promise.all([reloadMaterias(), reloadElectivas()]).finally(() => setLoading(false));
+    Promise.all([reloadMaterias(), reloadElectivas()])
+      .catch(err => setError(err.message ?? 'Error al cargar los datos'))
+      .finally(() => setLoading(false));
   }, [reloadMaterias, reloadElectivas]);
 
   useEffect(() => {
@@ -68,6 +108,14 @@ export default function App() {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('ues21-theme', theme);
   }, [theme]);
+
+  const withErrorHandling = useCallback(async (fn) => {
+    try {
+      await fn();
+    } catch (err) {
+      setError(err.message ?? 'Ocurrió un error inesperado');
+    }
+  }, []);
 
   // Derived state
   const obligatorias = materias.filter(m => m.tipo === 'obligatoria');
@@ -100,14 +148,13 @@ export default function App() {
       }));
   }, [materias]);
 
-  // Resolve selected materia from current materias array (stays fresh after reloads)
   const selectedMateria = useMemo(
     () => selectedId ? materias.find(m => m.id === selectedId) ?? null : null,
     [selectedId, materias]
   );
 
   function handleSelect(id) {
-    setSelectedId(prev => (prev === id ? null : id)); // toggle
+    setSelectedId(prev => (prev === id ? null : id));
   }
 
   function handleClosePanel() {
@@ -115,8 +162,10 @@ export default function App() {
   }
 
   async function handleUpdateElectivaFromPlan(form) {
-    await updateElectiva(editingElectiva.id, form);
-    await reloadElectivas();
+    await withErrorHandling(async () => {
+      await updateElectiva(editingElectiva.id, form);
+      await reloadElectivas();
+    });
   }
 
   function toggleTheme() {
@@ -136,13 +185,7 @@ export default function App() {
     { id: 'ayuda',   label: 'Ayuda',              icon: HelpCircle,    target: 'ayuda'   },
   ];
 
-  if (loading) {
-    return (
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'100vh', color:'#64748b' }}>
-        Cargando…
-      </div>
-    );
-  }
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="app-shell">
@@ -161,6 +204,7 @@ export default function App() {
                 type="button"
                 onClick={() => setTab(item.target)}
                 aria-label={item.label}
+                aria-current={active ? 'page' : undefined}
                 title={item.label}
               >
                 <Icon size={18} strokeWidth={2.2} aria-hidden="true" />
@@ -196,7 +240,7 @@ export default function App() {
           </div>
           <div className="progress-row">
             <span>{pct}% completada</span>
-            <div className="progress-bar-wrap">
+            <div className="progress-bar-wrap" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
               <div className="progress-bar-fill" style={{ width: `${pct}%` }} />
             </div>
             <span>{aprobadas} de {total} materias aprobadas</span>
@@ -319,6 +363,9 @@ export default function App() {
           showNotas={showNotas}
         />
       )}
+
+      {/* ── Toast notifications ── */}
+      {error && <Toast message={error} onDismiss={() => setError(null)} />}
     </div>
   );
 }

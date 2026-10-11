@@ -5,6 +5,10 @@ async function req(path, options = {}) {
     headers: { 'Content-Type': 'application/json' },
     ...options,
   });
+  if (!r.ok) {
+    const msg = await r.text().catch(() => r.statusText);
+    throw new Error(`API ${r.status}: ${msg}`);
+  }
   return r.json();
 }
 
